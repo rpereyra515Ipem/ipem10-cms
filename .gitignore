@@ -1,0 +1,11 @@
+
+# Seguridad y Base de Datos (NO SUBIR A GITHUB)
+.env
+.env.local
+.env*.local
+*.sqlite
+*.sqlite*
+database.sqlite*
+reports/
+node_modules/
+.next/

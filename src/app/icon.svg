@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Silueta del escudo: Marco rojo -->
+  <path d="M50 5 C24 5 15 17 15 45 C15 76 50 95 50 95 C50 95 85 76 85 45 C85 17 76 5 50 5 Z" fill="#b91c1c" />
+  <!-- Interior verde esmeralda -->
+  <path d="M50 10 C27 10 19 20 19 45 C19 72 50 89 50 89 C50 89 81 72 81 45 C81 20 73 10 50 10 Z" fill="#047857" />
+  
+  <!-- Alas blancas superiores -->
+  <path d="M22 42 Q36 34 50 44 Q64 34 78 42 Q65 52 50 46 Q35 52 22 42 Z" fill="#ffffff" />
+  
+  <!-- Libro abierto central con borde rojo -->
+  <path d="M34 46 Q50 43 50 68 Q34 66 34 46 Z" fill="#f8fafc" stroke="#991b1b" stroke-width="1.5" />
+  <path d="M66 46 Q50 43 50 68 Q66 66 66 46 Z" fill="#f8fafc" stroke="#991b1b" stroke-width="1.5" />
+  <!-- Cinta patria celeste y blanca -->
+  <rect x="42" y="66" width="6" height="10" fill="#38bdf8" />
+  <rect x="44" y="66" width="2" height="10" fill="#ffffff" />
+  
+  <!-- Texto institucional -->
+  <text x="50" y="24" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="900" font-family="sans-serif">IPEM 10</text>
+  <text x="50" y="33" text-anchor="middle" fill="#fef08a" font-size="7" font-weight="900" font-family="sans-serif" letter-spacing="1">ROMA</text>
+  <text x="50" y="84" text-anchor="middle" fill="#ffffff" font-size="6.5" font-weight="bold" font-family="sans-serif" letter-spacing="0.5">CÓRDOBA</text>
+</svg>
