@@ -83,11 +83,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Limpieza periódica de memoria para no acumular registros viejos
+  // Limpieza periódica de memoria compatible con todas las versiones de TypeScript
   if (rateLimitMap.size > 2000) {
-    for (const [k, v] of rateLimitMap.entries()) {
+    rateLimitMap.forEach((v, k) => {
       if (now > v.expiresAt) rateLimitMap.delete(k);
-    }
+    });
   }
 
   // -------------------------------------------------------------
