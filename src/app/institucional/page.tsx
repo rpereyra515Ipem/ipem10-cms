@@ -6,11 +6,11 @@ export default function InstitucionalPage() {
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* 1. Barra de Navegación Institucional */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <SchoolLogo size="md" className="group-hover:scale-105 transition transform" />
             <div>
-              <span className="font-black text-emerald-950 text-lg sm:text-xl block leading-tight tracking-tight">
+              <span className="font-black text-emerald-950 text-sm sm:text-xl block leading-tight tracking-tight whitespace-nowrap">
                 IPEM N° 10 Roma
               </span>
               <span className="hidden sm:block text-xs text-gray-500 font-medium">
@@ -290,7 +290,7 @@ export default function InstitucionalPage() {
               href="https://maps.google.com/?q=Padre+Lozano+375,+Alto+Alberdi,+Cordoba,+Argentina"
               target="_blank"
               rel="noreferrer"
-              className="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5"
+              className="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-1"
             >
               <span>🗺️</span> Abrir en Google Maps / GPS ↗
             </a>
@@ -364,7 +364,7 @@ export default function InstitucionalPage() {
               Exclusivo para directivos y secretaría:
             </p>
             <div className="mt-3">
-              <Link href="/login" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1.5 border border-slate-700 shadow-sm">
+              <Link href="/login" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1 border border-slate-700 shadow-sm">
                 <span>🔒</span> Iniciar Sesión de Gestión →
               </Link>
             </div>

@@ -24,11 +24,11 @@ export default async function HomePage() {
 
       {/* Barra de Navegación Institucional Limpia */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <SchoolLogo size="md" className="group-hover:scale-105 transition transform" />
             <div>
-              <span className="font-black text-emerald-950 text-lg sm:text-xl block leading-tight tracking-tight">
+              <span className="font-black text-emerald-950 text-sm sm:text-xl block leading-tight tracking-tight whitespace-nowrap">
                 IPEM N° 10 Roma
               </span>
               <span className="hidden sm:block text-xs text-gray-500 font-medium">
@@ -37,17 +37,17 @@ export default async function HomePage() {
             </div>
           </Link>
 
-          <nav className="flex items-center gap-2 sm:gap-3">
+          <nav className="flex items-center gap-1 sm:gap-2 shrink-0">
             <Link
               href="/institucional"
-              className="text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+              className="text-[11px] sm:text-sm font-semibold whitespace-nowrap px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition"
             >
               Institucional
             </Link>
 
             <Link
               href="/docentes"
-              className="text-xs sm:text-sm font-bold px-3 py-2 rounded-lg text-emerald-950 bg-emerald-100/70 hover:bg-emerald-200/80 border border-emerald-300/80 transition flex items-center gap-1.5"
+              className="text-[11px] sm:text-sm font-bold whitespace-nowrap px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-emerald-950 bg-emerald-100/70 hover:bg-emerald-200/80 border border-emerald-300/80 transition flex items-center gap-1"
               title="Sala de Profesores Digital"
             >
               <span>👨‍🏫</span>
@@ -56,7 +56,7 @@ export default async function HomePage() {
 
             <Link
               href="/login"
-              className="text-xs sm:text-sm font-bold px-3 py-2 rounded-lg text-white bg-slate-900 hover:bg-emerald-900 transition flex items-center gap-1.5 shadow-sm"
+              className="text-[11px] sm:text-sm font-bold whitespace-nowrap px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-white bg-slate-900 hover:bg-emerald-900 transition flex items-center gap-1 shadow-sm"
               title="Panel Administrativo"
             >
               <span>🔒</span>
@@ -154,7 +154,7 @@ export default async function HomePage() {
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">Novedades y Comunicados</h2>
             <p className="text-xs sm:text-sm text-gray-500">Publicaciones oficiales del IPEM 10 Roma</p>
           </div>
-          <Link href="/login" className="text-xs sm:text-sm font-bold text-emerald-700 hover:underline flex items-center gap-1">
+          <Link href="/login" className="text-[11px] sm:text-sm font-bold whitespace-nowrap text-emerald-700 hover:underline flex items-center gap-1">
             <span>🔒</span> Acceso Panel de Gestión →
           </Link>
         </div>
@@ -242,7 +242,7 @@ export default async function HomePage() {
               Exclusivo para directivos y secretaría:
             </p>
             <div className="mt-3">
-              <Link href="/login" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1.5 border border-slate-700 shadow-sm">
+              <Link href="/login" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1 border border-slate-700 shadow-sm">
                 <span>🔒</span> Iniciar Sesión de Gestión →
               </Link>
             </div>
