@@ -10,7 +10,7 @@ import { eq, desc } from 'drizzle-orm';
 
 const ALLOWED_ROLES = ['MASTER', 'DIRECTIVO', 'ADMIN', 'PRECEPTOR'];
 
-export async function createPreceptoriaNoticeAction(formData: FormData): Promise<{ error?: string; success?: boolean }> {
+export async function createPreceptoriaNoticeAction(formData: FormData): Promise<void> {
   const session = await getSession();
   if (!session || !ALLOWED_ROLES.includes(session.role)) {
     await logSecurityEvent({
@@ -22,7 +22,7 @@ export async function createPreceptoriaNoticeAction(formData: FormData): Promise
       actorRole: session?.role || 'GUEST',
       details: { intento: 'Crear aviso de preceptoría sin permisos' },
     });
-    return { error: 'No tienes permisos para publicar en Preceptoría.' };
+    return;
   }
 
   const title = (formData.get('title') as string)?.trim();
@@ -34,7 +34,7 @@ export async function createPreceptoriaNoticeAction(formData: FormData): Promise
   const effectiveDate = (formData.get('effectiveDate') as string) || new Date().toISOString().split('T')[0];
 
   if (!title || !content) {
-    return { error: 'Por favor complete el título y el detalle del comunicado.' };
+    return;
   }
 
   const newId = randomUUID();
@@ -66,13 +66,13 @@ export async function createPreceptoriaNoticeAction(formData: FormData): Promise
 
   revalidatePath('/');
   revalidatePath('/preceptoria');
-  return { success: true };
+  
 }
 
-export async function deletePreceptoriaNoticeAction(id: string): Promise<{ error?: string; success?: boolean }> {
+export async function deletePreceptoriaNoticeAction(id: string): Promise<void> {
   const session = await getSession();
   if (!session || !ALLOWED_ROLES.includes(session.role)) {
-    return { error: 'Acción no autorizada.' };
+    return;
   }
 
   await db.delete(preceptoriaNotices).where(eq(preceptoriaNotices.id, id));
@@ -89,7 +89,7 @@ export async function deletePreceptoriaNoticeAction(id: string): Promise<{ error
 
   revalidatePath('/');
   revalidatePath('/preceptoria');
-  return { success: true };
+  
 }
 
 export async function getPreceptoriaNotices() {
