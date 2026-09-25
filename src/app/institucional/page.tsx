@@ -9,8 +9,8 @@ export default function InstitucionalPage() {
         <div className="max-w-6xl mx-auto px-2 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <SchoolLogo size="md" className="group-hover:scale-105 transition transform" />
-            <div>
-              <span className="font-black text-emerald-950 text-sm sm:text-xl block leading-tight tracking-tight whitespace-nowrap">
+            <div className="hidden sm:block">
+              <span className="font-black text-emerald-950 text-lg sm:text-xl block leading-tight tracking-tight whitespace-nowrap">
                 IPEM N° 10 Roma
               </span>
               <span className="hidden sm:block text-xs text-gray-500 font-medium">

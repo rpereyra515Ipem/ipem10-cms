@@ -27,8 +27,8 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto px-2 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <SchoolLogo size="md" className="group-hover:scale-105 transition transform" />
-            <div>
-              <span className="font-black text-emerald-950 text-sm sm:text-xl block leading-tight tracking-tight whitespace-nowrap">
+            <div className="hidden sm:block">
+              <span className="font-black text-emerald-950 text-lg sm:text-xl block leading-tight tracking-tight whitespace-nowrap">
                 IPEM N° 10 Roma
               </span>
               <span className="hidden sm:block text-xs text-gray-500 font-medium">
@@ -249,15 +249,15 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Firma del Webmaster y Contacto Comercial */}
-        <div className="max-w-6xl mx-auto px-4 border-t border-emerald-900/80 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-emerald-300/80">
-          <p>© {new Date().getFullYear()} IPEM N° 10 Roma. Todos los derechos reservados.</p>
-          <div className="flex flex-wrap items-center justify-center gap-2 bg-emerald-900/50 px-3.5 py-1.5 rounded-full border border-emerald-700/60 shadow-inner">
+                {/* Firma del Webmaster y Contacto Comercial */}
+        <div className="max-w-6xl mx-auto px-4 border-t border-emerald-900/80 mt-10 pt-6 pb-24 sm:pb-8 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs text-emerald-300/80 lg:pr-72">
+          <p className="text-center lg:text-left">© {new Date().getFullYear()} IPEM N° 10 Roma. Todos los derechos reservados.</p>
+          <div className="flex flex-wrap items-center justify-center gap-2 bg-emerald-900/60 px-4 py-2 rounded-full border border-emerald-700/70 shadow-lg">
             <span className="text-emerald-200">💻 Webmaster y Desarrollo:</span>
-            <span className="font-bold text-white">Rafael Pereyra</span>
+            <span className="font-bold text-white">Lic. Rafael Pereyra</span>
             <span className="text-emerald-600 hidden sm:inline">•</span>
             <a
-              href="https://wa.me/5493516198503?text=Hola%20Rafael,%20vi%20la%20plataforma%20del%20IPEM%2010%20y%20quisiera%20consultar%20por%20este%20sistema%20para%20mi%20colegio"
+              href="https://wa.me/5493516198503?text=Hola%20Lic.%20Rafael,%20vi%20la%20plataforma%20del%20IPEM%2010%20y%20quisiera%20consultar%20por%20este%20sistema%20para%20mi%20colegio"
               target="_blank"
               rel="noopener noreferrer"
               className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 hover:underline transition"
