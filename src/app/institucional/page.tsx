@@ -13,7 +13,7 @@ export default function InstitucionalPage() {
               <span className="font-black text-emerald-950 text-lg sm:text-xl block leading-tight tracking-tight">
                 IPEM N° 10 Roma
               </span>
-              <span className="text-xs text-gray-500 font-medium">
+              <span className="hidden sm:block text-xs text-gray-500 font-medium">
                 Padre Lozano 375 • Alto Alberdi, Córdoba
               </span>
             </div>
