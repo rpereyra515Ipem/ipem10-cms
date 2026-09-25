@@ -16,7 +16,7 @@ export async function createPreceptoriaNoticeAction(formData: FormData): Promise
     await logSecurityEvent({
       severity: 'HIGH',
       action: 'UNAUTHORIZED_PRECEPTORIA_WRITE',
-      category: 'ACCESS_CONTROL',
+      category: 'SECURITY',
       status: 'FAILED',
       actorId: session?.userId || 'anonymous',
       actorRole: session?.role || 'GUEST',
