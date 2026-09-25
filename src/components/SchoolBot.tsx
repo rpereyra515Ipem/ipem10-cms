@@ -60,6 +60,30 @@ export default function SchoolBot() {
   function getBotResponse(query: string): { text: string; link?: { href: string; label: string } } {
     const q = query.toLowerCase();
 
+    // Detección de horas libres, ausencias de profesores y novedades de preceptoría
+    if (
+      q.includes("profe") ||
+      q.includes("profesor") ||
+      q.includes("profesora") ||
+      q.includes("falto") ||
+      q.includes("faltó") ||
+      q.includes("falta") ||
+      q.includes("faltan") ||
+      q.includes("ausen") ||
+      q.includes("hora libre") ||
+      q.includes("horas libres") ||
+      q.includes("precept") ||
+      q.includes("entro tarde") ||
+      q.includes("salgo temprano") ||
+      q.includes("cambio de horario")
+    ) {
+      return {
+        text: "Los avisos de horas libres, ausencias de profesores y modificaciones de horario de ingreso o salida se publican en tiempo real en el Portal de Preceptoría por curso y división.",
+        link: { href: "/preceptoria", label: "Ver Horas Libres y Avisos de Cursos →" },
+      };
+    }
+
+
     if (q.includes('mesa') || q.includes('examen') || q.includes('rendir') || q.includes('previa') || q.includes('equivalencia')) {
       return {
         text: 'En la sección de Mesas de Examen puedes consultar el cronograma oficial con fechas, horarios, turnos y tribunales docentes para materias previas y libres.',
@@ -291,6 +315,12 @@ export default function SchoolBot() {
 
           {/* Botones de Preguntas Rápidas */}
           <div className="p-2 bg-white border-t border-gray-100 flex gap-1.5 overflow-x-auto text-[11px] shrink-0">
+                        <button
+              onClick={() => handleSend("¿Hay horas libres o faltó algún profe hoy?")}
+              className="bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 px-2.5 py-1 rounded-full whitespace-nowrap font-bold transition"
+            >
+              🧑‍🏫 Horas libres / Preceptoría
+            </button>
             <button
               onClick={() => handleSend('¿Cuándo son las mesas de examen?')}
               className="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-gray-700 px-2.5 py-1 rounded-full whitespace-nowrap font-medium transition"
