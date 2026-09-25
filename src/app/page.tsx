@@ -87,78 +87,91 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Accesos Rápidos Principales (Orientados a Tareas Concretas) */}
+            {/* Accesos Rápidos Principales (7 Tarjetas en 1 Sola Línea) */}
       <section className="max-w-6xl mx-auto px-4 -mt-8 mb-12 w-full relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <Link
-            href="/mesas"
-            className="bg-white p-4 rounded-2xl border border-gray-200 shadow-md hover:border-emerald-600 hover:shadow-xl transition transform hover:-translate-y-0.5 text-center block"
-          >
-            <div className="text-2xl mb-1">📅</div>
-            <p className="font-extrabold text-gray-900 text-xs">Mesas de Examen</p>
-            <p className="text-[10px] text-emerald-700 font-medium">Cronograma de turnos</p>
-          </Link>
-
-          <Link
-            href="/tutorias"
-            className="bg-white p-4 rounded-2xl border border-gray-200 shadow-md hover:border-emerald-600 hover:shadow-xl transition transform hover:-translate-y-0.5 text-center block"
-          >
-            <div className="text-2xl mb-1">🎯</div>
-            <p className="font-extrabold text-gray-900 text-xs">Tutorías</p>
-            <p className="text-[10px] text-emerald-700 font-medium">Clases de apoyo</p>
-          </Link>
-
-          <Link
-            href="/descargas?cat=PROGRAMA"
-            className="bg-white p-4 rounded-2xl border border-gray-200 shadow-md hover:border-emerald-600 hover:shadow-xl transition transform hover:-translate-y-0.5 text-center block"
-          >
-            <div className="text-2xl mb-1">📚</div>
-            <p className="font-extrabold text-gray-900 text-xs">Programas</p>
-            <p className="text-[10px] text-emerald-700 font-medium">Materias previas</p>
-          </Link>
-
-          <Link
-            href="/biblioteca"
-            className="bg-white p-4 rounded-2xl border border-gray-200 shadow-md hover:border-emerald-600 hover:shadow-xl transition transform hover:-translate-y-0.5 text-center block"
-          >
-            <div className="text-2xl mb-1">📖</div>
-            <p className="font-extrabold text-gray-900 text-xs">Biblioteca</p>
-            <p className="text-[10px] text-emerald-700 font-medium">Libros y recursos</p>
-          </Link>
-
-          {/* Tarjeta corregida: Ventanilla pública de trámites */}
-          <Link
-            href="/descargas?cat=FORMULARIO"
-            className="bg-white p-4 rounded-2xl border border-gray-200 shadow-md hover:border-emerald-600 hover:shadow-xl transition transform hover:-translate-y-0.5 text-center block"
-          >
-            <div className="text-2xl mb-1">📄</div>
-            <p className="font-extrabold text-gray-900 text-xs">Trámites y Formularios</p>
-            <p className="text-[10px] text-emerald-700 font-medium">Constancias, CUS y pases</p>
-          </Link>
-
-          
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
+          {/* 1. Preceptoría (PRIMERO) */}
           <Link
             href="/preceptoria"
-            className="group bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition block"
+            className="bg-white p-3 rounded-xl border-2 border-rose-200 shadow-sm hover:border-rose-400 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition transform">
-              🧑‍🏫
+            <div>
+              <span className="text-2xl block mb-1">🧑‍🏫</span>
+              <h3 className="font-bold text-gray-900 text-xs leading-tight">Preceptoría</h3>
+              <p className="text-[10px] text-rose-600 font-semibold mt-0.5 leading-tight">Horas libres y avisos</p>
             </div>
-            <h3 className="font-bold text-gray-900 text-sm group-hover:text-emerald-800 transition">
-              Preceptoría y Cursos
-            </h3>
-            <p className="text-xs text-gray-500 mt-1">
-              Horas libres, cambios de horario y avisos
-            </p>
           </Link>
 
+          {/* 2. Mesas de Examen */}
+          <Link
+            href="/mesas"
+            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+          >
+            <div>
+              <span className="text-2xl block mb-1">📅</span>
+              <h3 className="font-bold text-gray-900 text-xs leading-tight">Mesas de Examen</h3>
+              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Turnos y fechas</p>
+            </div>
+          </Link>
+
+          {/* 3. Tutorías */}
+          <Link
+            href="/tutorias"
+            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+          >
+            <div>
+              <span className="text-2xl block mb-1">🎯</span>
+              <h3 className="font-bold text-gray-900 text-xs leading-tight">Tutorías</h3>
+              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Clases de apoyo</p>
+            </div>
+          </Link>
+
+          {/* 4. Programas */}
+          <Link
+            href="/descargas?cat=PROGRAMA"
+            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+          >
+            <div>
+              <span className="text-2xl block mb-1">📚</span>
+              <h3 className="font-bold text-gray-900 text-xs leading-tight">Programas</h3>
+              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Materias previas</p>
+            </div>
+          </Link>
+
+          {/* 5. Biblioteca */}
+          <Link
+            href="/biblioteca"
+            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+          >
+            <div>
+              <span className="text-2xl block mb-1">📖</span>
+              <h3 className="font-bold text-gray-900 text-xs leading-tight">Biblioteca</h3>
+              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Libros y recursos</p>
+            </div>
+          </Link>
+
+          {/* 6. Trámites y Formularios */}
+          <Link
+            href="/descargas"
+            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+          >
+            <div>
+              <span className="text-2xl block mb-1">📄</span>
+              <h3 className="font-bold text-gray-900 text-xs leading-tight">Trámites y CUS</h3>
+              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Formularios y pases</p>
+            </div>
+          </Link>
+
+          {/* 7. Cooperadora */}
           <Link
             href="/cooperadora"
-            className="bg-white p-4 rounded-2xl border border-amber-200 shadow-md hover:border-amber-500 hover:shadow-xl transition transform hover:-translate-y-0.5 text-center block"
+            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-amber-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
           >
-            <div className="text-2xl mb-1">🤝</div>
-            <p className="font-extrabold text-amber-900 text-xs">Cooperadora</p>
-            <p className="text-[10px] text-amber-700 font-medium">Cómo colaborar</p>
+            <div>
+              <span className="text-2xl block mb-1">🤝</span>
+              <h3 className="font-bold text-gray-900 text-xs leading-tight">Cooperadora</h3>
+              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Cómo colaborar</p>
+            </div>
           </Link>
         </div>
       </section>
