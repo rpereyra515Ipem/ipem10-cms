@@ -248,6 +248,25 @@ export default async function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* Firma del Webmaster y Contacto Comercial */}
+        <div className="max-w-6xl mx-auto px-4 border-t border-emerald-900/80 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-emerald-300/80">
+          <p>© {new Date().getFullYear()} IPEM N° 10 Roma. Todos los derechos reservados.</p>
+          <div className="flex flex-wrap items-center justify-center gap-2 bg-emerald-900/50 px-3.5 py-1.5 rounded-full border border-emerald-700/60 shadow-inner">
+            <span className="text-emerald-200">💻 Webmaster y Desarrollo:</span>
+            <span className="font-bold text-white">Rafael Pereyra</span>
+            <span className="text-emerald-600 hidden sm:inline">•</span>
+            <a
+              href="https://wa.me/5493516198503?text=Hola%20Rafael,%20vi%20la%20plataforma%20del%20IPEM%2010%20y%20quisiera%20consultar%20por%20este%20sistema%20para%20mi%20colegio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 hover:underline transition"
+              title="Consultar por este CMS para otra institución"
+            >
+              <span>📲 Contactar por WhatsApp</span>
+            </a>
+          </div>
+        </div>
       </footer>
     </div>
   );
