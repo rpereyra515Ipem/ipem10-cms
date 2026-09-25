@@ -136,6 +136,22 @@ export default async function HomePage() {
             <p className="text-[10px] text-emerald-700 font-medium">Constancias, CUS y pases</p>
           </Link>
 
+          
+          <Link
+            href="/preceptoria"
+            className="group bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-emerald-300 transition block"
+          >
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition transform">
+              🧑‍🏫
+            </div>
+            <h3 className="font-bold text-gray-900 text-sm group-hover:text-emerald-800 transition">
+              Preceptoría y Cursos
+            </h3>
+            <p className="text-xs text-gray-500 mt-1">
+              Horas libres, cambios de horario y avisos
+            </p>
+          </Link>
+
           <Link
             href="/cooperadora"
             className="bg-white p-4 rounded-2xl border border-amber-200 shadow-md hover:border-amber-500 hover:shadow-xl transition transform hover:-translate-y-0.5 text-center block"

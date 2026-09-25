@@ -103,6 +103,21 @@ async function runSetup() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
+    
+    CREATE TABLE IF NOT EXISTS preceptoria_notices (
+      id TEXT PRIMARY KEY,
+      year_level TEXT NOT NULL,
+      division TEXT NOT NULL,
+      shift TEXT NOT NULL DEFAULT 'MAÑANA',
+      type TEXT NOT NULL DEFAULT 'COMUNICADO_CURSO',
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      effective_date TEXT NOT NULL,
+      author_id TEXT NOT NULL,
+      author_name TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE TABLE IF NOT EXISTS audit_security_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       timestamp TEXT DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
@@ -160,7 +175,25 @@ async function runSetup() {
     console.log(`👤 Usuario DIRECTIVO creado: ${directivoEmail}`);
   }
 
-  // 4. Migrar noticias de WordPress si la tabla posts está vacía
+  
+  // 4. Crear usuario PRECEPTOR
+  const preceptorEmail = 'preceptoria.manana@ipem10.edu.ar';
+  const existingPreceptor = await db.select().from(users).where(eq(users.email, preceptorEmail)).limit(1);
+  if (existingPreceptor.length === 0) {
+    const preceptorHash = await hashPassword('PreceptorIPEM10!');
+    await db.insert(users).values({
+      id: randomUUID(),
+      email: preceptorEmail,
+      passwordHash: preceptorHash,
+      fullName: 'Preceptoría Turno Mañana',
+      role: 'PRECEPTOR',
+      mustChangePassword: false,
+      active: true,
+    });
+    console.log(`🧑‍🏫 Usuario PRECEPTOR creado: ${preceptorEmail}`);
+  }
+
+  // 5. Migrar noticias de WordPress si la tabla posts está vacía
   const existingPosts = await db.select().from(posts).limit(1);
   if (existingPosts.length === 0) {
     console.log('🔄 Descargando publicaciones oficiales de https://ipem10.edu.ar/ ...');
