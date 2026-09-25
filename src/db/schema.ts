@@ -6,7 +6,7 @@ export const users = sqliteTable('users', {
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   fullName: text('full_name').notNull(),
-  role: text('role', { enum: ['ADMIN', 'SECRETARIA', 'DOCENTE'] }).notNull().default('DOCENTE'),
+  role: text('role', { enum: ['MASTER', 'DIRECTIVO', 'ADMIN', 'SECRETARIA', 'PRECEPTOR', 'DOCENTE'] }).notNull().default('DOCENTE'),
   mustChangePassword: integer('must_change_password', { mode: 'boolean' }).notNull().default(true),
   active: integer('active', { mode: 'boolean' }).notNull().default(true),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
@@ -88,3 +88,23 @@ export const auditSecurityLogs = sqliteTable(
 
 export type AuditSecurityLog = typeof auditSecurityLogs.$inferSelect;
 export type NewAuditSecurityLog = typeof auditSecurityLogs.$inferInsert;
+
+// Novedades y Avisos de Preceptoría (Horas Libres, Citaciones, Cambios de Horario)
+export const preceptoriaNotices = sqliteTable('preceptoria_notices', {
+  id: text('id').primaryKey(),
+  yearLevel: text('year_level').notNull(), // 1° Año a 6° Año o TODOS
+  division: text('division').notNull(),   // A, B, C o TODAS
+  shift: text('shift', { enum: ['MAÑANA', 'TARDE', 'AMBOS'] }).notNull().default('MAÑANA'),
+  type: text('type', { 
+    enum: ['HORA_LIBRE', 'CAMBIO_HORARIO', 'CITACION_FAMILIA', 'COMUNICADO_CURSO'] 
+  }).notNull().default('COMUNICADO_CURSO'),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  effectiveDate: text('effective_date').notNull(), // Fecha en que aplica (ej: 2026-09-26)
+  authorId: text('author_id').notNull(),
+  authorName: text('author_name').notNull(),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+export type PreceptoriaNotice = typeof preceptoriaNotices.$inferSelect;
+export type NewPreceptoriaNotice = typeof preceptoriaNotices.$inferInsert;

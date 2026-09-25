@@ -9,7 +9,7 @@ const COOKIE_NAME = 'ipem10_session';
 
 interface SessionToken {
   userId: string;
-  role: 'ADMIN' | 'SECRETARIA' | 'DOCENTE';
+  role: 'MASTER' | 'DIRECTIVO' | 'ADMIN' | 'SECRETARIA' | 'PRECEPTOR' | 'DOCENTE';
   fullName: string;
 }
 

@@ -74,6 +74,36 @@ export default function SchoolBot() {
       };
     }
 
+    // --- Módulo de Preceptoría y Vida Escolar ---
+    if (q.includes("hora libre") || q.includes("horas libres") || q.includes("entro tarde") || q.includes("salgo temprano") || q.includes("entra tarde") || q.includes("sale temprano") || q.includes("falta profesor") || q.includes("cambio de horario")) {
+      return {
+        text: "Los avisos de horas libres, cambios de horario de ingreso o salida por ausencia de profesores se publican en tiempo real en el Portal de Preceptoría por curso y división.",
+        link: { href: "/preceptoria", label: "Ver Horas Libres y Novedades de Cursos →" },
+      };
+    }
+
+    if (q.includes("preceptoria") || q.includes("preceptor") || q.includes("preceptora")) {
+      return {
+        text: "Preceptoría gestiona la vida diaria de los cursos, justificación de inasistencias, citaciones a familias y novedades de 1° a 6° año en ambos turnos.",
+        link: { href: "/preceptoria", label: "Ingresar al Portal de Preceptoría →" },
+      };
+    }
+
+    if (q.includes("falta") || q.includes("inasistencia") || q.includes("justificativo") || q.includes("justificar")) {
+      return {
+        text: "Para justificar inasistencias por enfermedad, se debe presentar el certificado médico en Preceptoría dentro de las 48 hs hábiles posteriores al reintegro escolar.",
+        link: { href: "/preceptoria", label: "Consultar información de Preceptoría →" },
+      };
+    }
+
+    if (q.includes("retirar") || q.includes("retiro anticipado")) {
+      return {
+        text: "El retiro anticipado de un estudiante solo puede ser realizado personalmente en Preceptoría por el padre, madre o tutor legal acreditado con DNI original.",
+        link: { href: "/preceptoria", label: "Ver Portal de Preceptoría →" },
+      };
+    }
+
+
     if (q.includes('constancia') || q.includes('alumno regular') || q.includes('pase') || q.includes('tramite') || q.includes('formulario') || q.includes('cus') || q.includes('salud')) {
       return {
         text: 'Los formularios oficiales de secretaría (Certificado Único de Salud CUS, solicitud de constancia de alumno regular y autorizaciones) están disponibles para descarga directa.',

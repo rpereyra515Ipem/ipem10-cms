@@ -8,7 +8,7 @@ const COOKIE_NAME = 'ipem10_session';
 
 export interface SessionPayload extends JWTPayload {
   userId: string;
-  role: 'ADMIN' | 'EDITOR';
+  role: 'MASTER' | 'DIRECTIVO' | 'ADMIN' | 'SECRETARIA' | 'PRECEPTOR' | 'DOCENTE';
   fullName: string;
   [key: string]: unknown;
 }

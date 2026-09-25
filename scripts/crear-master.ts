@@ -5,28 +5,27 @@ import { randomUUID } from 'crypto';
 import { eq } from 'drizzle-orm';
 
 async function main() {
-  const email = 'vicedireccion@ipem10.edu.ar';
-  const tempPassword = 'ClaveTemporal123!';
-  const hash = await hashPassword(tempPassword);
+  const email = 'rpereyra.ipem10@gmail.com';
+  const password = 'MasterIPEM10Seguro!'; // Puedes cambiarla por la que desees
+  const hash = await hashPassword(password);
 
-  // Elimina si existía para actualizar rol limpiamente
   await db.delete(users).where(eq(users.email, email));
 
   await db.insert(users).values({
     id: randomUUID(),
     email,
     passwordHash: hash,
-    fullName: 'Prof. Vicedirección IPEM 10',
-    role: 'DIRECTIVO', // Rol institucional escolar
-    mustChangePassword: true,
+    fullName: 'Lic. Rafael Pereyra (Webmaster Master)',
+    role: 'MASTER', // Rol con control total técnico y de seguridad
+    mustChangePassword: false,
     active: true,
   });
 
-  console.log('\n✅ Usuario DIRECTIVO creado con éxito:');
+  console.log('\n👑 Usuario MASTER creado con éxito:');
   console.log('--------------------------------------------------');
   console.log(`📧 Correo:     ${email}`);
-  console.log(`🔑 Clave temp: ${tempPassword}`);
-  console.log(`🛡️  Rol:        DIRECTIVO (Gestión Escolar)`);
+  console.log(`🔑 Clave:      ${password}`);
+  console.log(`🛡️  Rol:        MASTER (Seguridad y Control Total)`);
   console.log('--------------------------------------------------\n');
 }
 
