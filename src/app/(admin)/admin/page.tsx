@@ -1,156 +1,309 @@
 import { db } from '@/db';
-import { posts, exams, documents, memos } from '@/db/schema';
-import { sql } from 'drizzle-orm';
+import { posts, exams, documents, memos, users, auditSecurityLogs } from '@/db/schema';
+import { getSession } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
-
-export const dynamic = 'force-dynamic';
+import { sql, and, gte, inArray, desc } from 'drizzle-orm';
 
 export default async function AdminDashboardPage() {
-  // Consultas rápidas para contar registros en la base de datos
+  const session = await getSession();
+  if (!session) {
+    redirect('/login');
+  }
+
+  const isMaster = session.role === 'MASTER';
+
+  // Métricas escolares
   const [postsCount] = await db.select({ count: sql<number>`count(*)` }).from(posts);
   const [examsCount] = await db.select({ count: sql<number>`count(*)` }).from(exams);
-  const [docsCount] = await db.select({ count: sql<number>`count(*)` }).from(documents);
+  const [documentsCount] = await db.select({ count: sql<number>`count(*)` }).from(documents);
   const [memosCount] = await db.select({ count: sql<number>`count(*)` }).from(memos);
+  const [usersCount] = await db.select({ count: sql<number>`count(*)` }).from(users);
+
+  // Métricas y registros exclusivos para el MASTER
+  let auditTotal = 0;
+  let criticalTotal = 0;
+  let recentAuditLogs: any[] = [];
+
+  if (isMaster) {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const dateStr = sevenDaysAgo.toISOString();
+
+    const [totalAuditRes] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(auditSecurityLogs)
+      .where(gte(auditSecurityLogs.timestamp, dateStr));
+    auditTotal = totalAuditRes?.count || 0;
+
+    const [critRes] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(auditSecurityLogs)
+      .where(
+        and(
+          gte(auditSecurityLogs.timestamp, dateStr),
+          inArray(auditSecurityLogs.severity, ['CRITICAL', 'HIGH'])
+        )
+      );
+    criticalTotal = critRes?.count || 0;
+
+    recentAuditLogs = await db
+      .select()
+      .from(auditSecurityLogs)
+      .orderBy(desc(auditSecurityLogs.timestamp))
+      .limit(5);
+  }
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4">
-      {/* Encabezado del Panel */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b pb-4 gap-4">
-        <div>
-          <span className="text-xs uppercase font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full">
-            Panel de Control
-          </span>
-          <h1 className="text-3xl font-extrabold text-gray-900 mt-2">
-            Administración IPEM N° 10 Roma
-          </h1>
-          <p className="text-sm text-gray-600">
-            Gestión centralizada de contenidos, exámenes, documentos y circulares docentes.
+    <div className="space-y-8">
+      {/* ========================================================= */}
+      {/* 1. CABECERA DIFERENCIADA POR ROL */}
+      {/* ========================================================= */}
+      {isMaster ? (
+        // CABECERA EXCLUSIVA DEL MASTER (Dorado, Púrpura y Alta Jerarquía)
+        <div className="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 border-2 border-amber-500/70 shadow-2xl rounded-2xl p-6 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="bg-amber-400 text-amber-950 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  👑 ROL: MASTER / WEBMASTER
+                </span>
+                <span className="bg-purple-500/30 text-purple-200 border border-purple-400/40 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                  Control Total de Infraestructura
+                </span>
+                <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                  🛡️ Ciberseguridad L7 Activa
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Consola de Control Técnico & Auditoría
+              </h1>
+              <p className="text-purple-200/80 text-xs sm:text-sm mt-1">
+                Sesión técnica iniciada por: <strong className="text-amber-300 font-bold">{session.fullName}</strong> ({session.userId})
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href="/admin/usuarios"
+                className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1.5"
+              >
+                <span>👥</span> Gestionar Personal y Roles
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // CABECERA DEL DIRECTIVO (Institucional Escolar)
+        <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border border-emerald-800 shadow-lg rounded-2xl p-6 text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold px-3 py-0.5 rounded-full uppercase">
+                  🏛️ ROL: DIRECTIVO ESCOLAR
+                </span>
+              </div>
+              <h1 className="text-2xl font-black text-white tracking-tight">
+                Panel de Administración y Gestión Escolar
+              </h1>
+              <p className="text-emerald-200/80 text-xs sm:text-sm mt-1">
+                Bienvenido/a, <strong className="text-white font-bold">{session.fullName}</strong>.
+              </p>
+            </div>
+            <Link
+              href="/admin/usuarios"
+              className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2 rounded-xl border border-white/20 transition self-start sm:self-auto"
+            >
+              👥 Ver Personal
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* 2. CENTRO DE CIBERSEGURIDAD Y CONTROL (SOLO VISIBLE PARA EL MASTER) */}
+      {/* ========================================================= */}
+      {isMaster && (
+        <div className="bg-slate-900 border border-purple-900/60 rounded-2xl p-6 shadow-xl text-white space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div>
+              <h2 className="text-base font-extrabold text-white flex items-center gap-2">
+                <span>🛡️</span> Métricas de Ciberseguridad y Salud del Sistema
+              </h2>
+              <p className="text-xs text-slate-400">Datos forenses en tiempo real desde <code>audit_security_logs</code>.</p>
+            </div>
+            <span className="text-xs text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-3 py-1 rounded-full font-bold">
+              VPS DonWeb Activo
+            </span>
+          </div>
+
+          {/* Tarjetas de métricas del Master */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <span className="text-xs font-bold text-slate-400 block mb-1">Eventos Auditados (7 días)</span>
+              <span className="text-3xl font-black text-purple-400">{auditTotal}</span>
+              <span className="text-[11px] text-slate-500 block mt-1">Registros con IP y User-Agent</span>
+            </div>
+
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <span className="text-xs font-bold text-slate-400 block mb-1">Alertas Críticas / Altas</span>
+              <span className="text-3xl font-black text-amber-400">{criticalTotal}</span>
+              <span className="text-[11px] text-slate-500 block mt-1">Intentos fallidos o bloqueos</span>
+            </div>
+
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <span className="text-xs font-bold text-slate-400 block mb-1">Cuentas Registradas</span>
+              <span className="text-3xl font-black text-emerald-400">{usersCount.count}</span>
+              <Link href="/admin/usuarios" className="text-[11px] text-emerald-400 hover:underline block mt-1 font-bold">
+                Gestionar personal →
+              </Link>
+            </div>
+          </div>
+
+          {/* Tabla rápida de últimos eventos forenses */}
+          <div>
+            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+              Últimos eventos registrados en el servidor
+            </h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-800">
+                  <tr>
+                    <th className="p-2.5">Fecha</th>
+                    <th className="p-2.5">Severidad</th>
+                    <th className="p-2.5">Acción</th>
+                    <th className="p-2.5">Actor</th>
+                    <th className="p-2.5">IP</th>
+                    <th className="p-2.5">Estado</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+                  {recentAuditLogs.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="p-4 text-center text-slate-500">
+                        No hay eventos recientes registrados.
+                      </td>
+                    </tr>
+                  ) : (
+                    recentAuditLogs.map((log) => {
+                      const sevBadge =
+                        log.severity === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border-rose-800' :
+                        log.severity === 'HIGH' ? 'bg-amber-950 text-amber-300 border-amber-800' :
+                        log.severity === 'MEDIUM' ? 'bg-purple-950 text-purple-300 border-purple-800' :
+                        'bg-emerald-950 text-emerald-300 border-emerald-800';
+
+                      return (
+                        <tr key={log.id} className="hover:bg-slate-800/40">
+                          <td className="p-2.5 text-slate-400 whitespace-nowrap">{log.timestamp}</td>
+                          <td className="p-2.5 whitespace-nowrap">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${sevBadge}`}>
+                              {log.severity}
+                            </span>
+                          </td>
+                          <td className="p-2.5 font-bold text-white whitespace-nowrap">{log.action}</td>
+                          <td className="p-2.5 text-slate-300 whitespace-nowrap">{log.actorId || 'Anónimo'}</td>
+                          <td className="p-2.5 text-slate-400 whitespace-nowrap">{log.ipAddress}</td>
+                          <td className="p-2.5 whitespace-nowrap">
+                            <span className={log.status === 'SUCCESS' ? 'text-emerald-400' : 'text-rose-400'}>
+                              {log.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* 3. MÓDULOS DE GESTIÓN ESCOLAR (COMUNES A TODOS LOS GESTORES) */}
+      {/* ========================================================= */}
+      <div>
+        <div className="border-b border-gray-200 pb-3 mb-6">
+          <h2 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
+            <span>📚</span> {isMaster ? 'Módulos de Gestión Escolar (Vista de Contenidos)' : 'Módulos de Gestión Escolar'}
+          </h2>
+          <p className="text-xs text-gray-500">
+            Administración de noticias, mesas de examen, programas y circulares institucionales.
           </p>
         </div>
-        <Link
-          href="/"
-          target="_blank"
-          className="bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition flex items-center gap-1.5"
-        >
-          <span>🌐</span> Ver Sitio Web Público →
-        </Link>
-      </div>
 
-      {/* Tarjetas de Métricas en Tiempo Real */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        <div className="bg-white p-5 rounded-xl border shadow-sm">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Publicaciones</p>
-          <p className="text-3xl font-black text-blue-700 mt-1">{postsCount?.count || 0}</p>
-          <span className="text-xs text-gray-400">Noticias y avisos</span>
+        {/* Contadores Escolares */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+            <span className="text-2xl font-black text-emerald-950 block">{postsCount.count}</span>
+            <span className="text-xs text-gray-500 font-medium">Noticias y avisos</span>
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+            <span className="text-2xl font-black text-emerald-950 block">{examsCount.count}</span>
+            <span className="text-xs text-gray-500 font-medium">Mesas de examen</span>
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+            <span className="text-2xl font-black text-emerald-950 block">{documentsCount.count}</span>
+            <span className="text-xs text-gray-500 font-medium">Programas y PDFs</span>
+          </div>
+
+          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+            <span className="text-2xl font-black text-emerald-950 block">{memosCount.count}</span>
+            <span className="text-xs text-gray-500 font-medium">Circulares emitidas</span>
+          </div>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border shadow-sm">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Mesas de Examen</p>
-          <p className="text-3xl font-black text-amber-600 mt-1">{examsCount?.count || 0}</p>
-          <span className="text-xs text-gray-400">Materias en cronograma</span>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl border shadow-sm">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Documentos y PDFs</p>
-          <p className="text-3xl font-black text-green-700 mt-1">{docsCount?.count || 0}</p>
-          <span className="text-xs text-gray-400">Programas y formularios</span>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl border shadow-sm">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Circulares Docentes</p>
-          <p className="text-3xl font-black text-purple-700 mt-1">{memosCount?.count || 0}</p>
-          <span className="text-xs text-gray-400">Sala de profesores</span>
-        </div>
-      </section>
-
-      {/* Módulos de Gestión */}
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Módulos de Gestión</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Módulo 1: Publicaciones */}
-        <div className="bg-white p-6 rounded-xl border shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl">📢</span>
-              <h3 className="text-lg font-bold text-gray-900">Noticias y Comunicados Públicos</h3>
-            </div>
-            <p className="text-sm text-gray-600 mb-4">
+        {/* Tarjetas de acceso a módulos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
+            <div className="text-2xl mb-2">📢</div>
+            <h3 className="font-bold text-gray-900 text-base">Noticias y Comunicados Públicos</h3>
+            <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
               Crea avisos urgentes para la portada, comunicados generales con imágenes y novedades para la comunidad educativa.
             </p>
-          </div>
-          <div className="flex gap-2 border-t pt-4">
-            <Link
-              href="/admin/publicaciones"
-              className="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold py-2 rounded-lg transition"
-            >
-              Ver Listado
-            </Link>
-            <Link
-              href="/admin/publicaciones/nueva"
-              className="flex-1 text-center bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold py-2 rounded-lg transition"
-            >
-              + Nueva Noticia
-            </Link>
-          </div>
-        </div>
-
-        {/* Módulo 2: Mesas de Examen */}
-        <div className="bg-white p-6 rounded-xl border shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl">📅</span>
-              <h3 className="text-lg font-bold text-gray-900">Cronograma de Mesas de Examen</h3>
+            <div className="flex gap-2">
+              <Link href="/admin/publicaciones" className="text-xs font-bold px-4 py-2 border rounded-lg hover:bg-gray-50 text-gray-700">
+                Ver Listado
+              </Link>
+              <Link href="/admin/publicaciones/nueva" className="text-xs font-bold px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">
+                + Nueva Noticia
+              </Link>
             </div>
-            <p className="text-sm text-gray-600 mb-4">
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
+            <div className="text-2xl mb-2">📅</div>
+            <h3 className="font-bold text-gray-900 text-base">Cronograma de Mesas de Examen</h3>
+            <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
               Administra las fechas, horarios, turnos, aulas y tribunales de materias previas, libres y equivalencias.
             </p>
-          </div>
-          <div className="border-t pt-4">
-            <Link
-              href="/admin/mesas"
-              className="block text-center bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold py-2 rounded-lg transition"
-            >
+            <Link href="/admin/mesas" className="text-xs font-bold px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow inline-block">
               Gestionar Mesas de Examen →
             </Link>
           </div>
-        </div>
 
-        {/* Módulo 3: Descargas y Programas */}
-        <div className="bg-white p-6 rounded-xl border shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl">📁</span>
-              <h3 className="text-lg font-bold text-gray-900">Programas de Estudio y Secretaría</h3>
-            </div>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
+            <div className="text-2xl mb-2">📁</div>
+            <h3 className="font-bold text-gray-900 text-base">Programas de Estudio y Secretaría</h3>
+            <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
               Sube y actualiza los PDFs de los programas de 1° a 6° año y los formularios descargables para familias.
             </p>
-          </div>
-          <div className="border-t pt-4">
-            <Link
-              href="/admin/descargas"
-              className="block text-center bg-green-700 hover:bg-green-800 text-white text-xs font-semibold py-2 rounded-lg transition"
-            >
+            <Link href="/admin/descargas" className="text-xs font-bold px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg shadow inline-block">
               Gestionar Repositorio de PDFs →
             </Link>
           </div>
-        </div>
 
-        {/* Módulo 4: Circulares Docentes */}
-        <div className="bg-white p-6 rounded-xl border shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl">📋</span>
-              <h3 className="text-lg font-bold text-gray-900">Circulares Internas Docentes</h3>
-            </div>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
+            <div className="text-2xl mb-2">📋</div>
+            <h3 className="font-bold text-gray-900 text-base">Circulares Internas Docentes</h3>
+            <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
               Emite comunicados exclusivos para directivos, docentes y preceptores en la Sala de Profesores Digital.
             </p>
-          </div>
-          <div className="border-t pt-4">
-            <Link
-              href="/admin/circulares"
-              className="block text-center bg-purple-700 hover:bg-purple-800 text-white text-xs font-semibold py-2 rounded-lg transition"
-            >
+            <Link href="/admin/circulares" className="text-xs font-bold px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg shadow inline-block">
               Gestionar Circulares Internas →
             </Link>
           </div>
