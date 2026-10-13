@@ -22,9 +22,10 @@ export default function InstitucionalPage() {
           <nav className="flex items-center gap-1 sm:gap-2">
             <Link
               href="/"
-              className="text-xs font-semibold px-2.5 py-1.5 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+              className="text-[11px] sm:text-sm font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 transition flex items-center gap-1 shadow-sm whitespace-nowrap"
             >
-              Inicio
+              <span>🏠</span>
+              <span>Inicio</span>
             </Link>
             <Link
               href="/tutorias"

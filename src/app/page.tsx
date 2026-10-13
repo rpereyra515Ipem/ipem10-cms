@@ -40,9 +40,11 @@ export default async function HomePage() {
           <nav className="flex items-center gap-1 sm:gap-2 shrink-0">
             <Link
               href="/institucional"
-              className="text-[11px] sm:text-sm font-semibold whitespace-nowrap px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+              className="text-[11px] sm:text-sm font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 transition flex items-center gap-1 shadow-sm whitespace-nowrap"
+              title="Historia, orientación e identidad del colegio"
             >
-              Institucional
+              <span>🏛️</span>
+              <span>Institucional</span>
             </Link>
 
             <Link
@@ -262,7 +264,14 @@ export default async function HomePage() {
               <li><Link href="/tutorias" className="hover:text-white">Clases de Tutorías</Link></li>
               <li><Link href="/biblioteca" className="hover:text-white">Biblioteca Escolar</Link></li>
               <li><Link href="/cooperadora" className="hover:text-white">Asociación Cooperadora</Link></li>
-              <li><Link href="/institucional" className="hover:text-white">Identidad Institucional</Link></li>
+              <li><Link
+              href="/institucional"
+              className="text-[11px] sm:text-sm font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 transition flex items-center gap-1 shadow-sm whitespace-nowrap"
+              title="Historia, orientación e identidad del colegio"
+            >
+              <span>🏛️</span>
+              <span>Institucional</span>
+            </Link></li>
             </ul>
           </div>
           <div>
