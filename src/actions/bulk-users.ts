@@ -5,6 +5,7 @@ import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import crypto from 'crypto';
 
 export interface DocenteImportItem {
   nombre: string;
@@ -16,7 +17,6 @@ export interface DocenteImportItem {
 
 export async function importarDocentesAction(docentes: DocenteImportItem[]) {
   try {
-    // Verificación de seguridad en el servidor
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('session')?.value || cookieStore.get('auth_token')?.value;
 
@@ -33,7 +33,7 @@ export async function importarDocentesAction(docentes: DocenteImportItem[]) {
       role = sessionCookie;
     }
 
-    const rolesAutorizados = ['SECRETARIA', 'DIRECTIVO', 'MASTER'];
+    const rolesAutorizados = ['SECRETARIA', 'DIRECTIVO', 'MASTER', 'ADMIN'];
     if (role && !rolesAutorizados.includes(role.toUpperCase())) {
       return { success: false, error: 'Permisos insuficientes: solo Secretaría y Directivos pueden realizar carga masiva.' };
     }
@@ -50,28 +50,30 @@ export async function importarDocentesAction(docentes: DocenteImportItem[]) {
         continue;
       }
 
-      const rolAsignado = (doc.rol && ['DOCENTE', 'PRECEPTOR', 'SECRETARIA', 'DIRECTIVO'].includes(doc.rol.toUpperCase()))
-        ? doc.rol.toUpperCase()
+      const rolValido = (doc.rol && ['DOCENTE', 'PRECEPTOR', 'SECRETARIA', 'DIRECTIVO', 'ADMIN', 'MASTER'].includes(doc.rol.toUpperCase()))
+        ? (doc.rol.toUpperCase() as "DOCENTE" | "PRECEPTOR" | "SECRETARIA" | "DIRECTIVO" | "ADMIN" | "MASTER")
         : 'DOCENTE';
 
       const existing = await db.select().from(users).where(eq(users.email, emailNorm)).limit(1);
 
       if (existing.length > 0) {
         await db.update(users).set({
-          name: doc.nombre || existing[0].name,
+          fullName: doc.nombre || existing[0].fullName,
           personalEmail: doc.personalEmail || existing[0].personalEmail,
-          role: rolAsignado,
-          isActive: true,
+          role: rolValido,
+          active: true,
         }).where(eq(users.email, emailNorm));
         actualizados++;
       } else {
         await db.insert(users).values({
-          name: doc.nombre || 'Docente IPEM 10',
+          id: `usr_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`,
+          fullName: doc.nombre || 'Docente IPEM 10',
           email: emailNorm,
           personalEmail: doc.personalEmail || null,
-          role: rolAsignado,
-          isActive: true,
-          password: 'SSO_GOOGLE_WORKSPACE',
+          role: rolValido,
+          active: true,
+          passwordHash: 'SSO_GOOGLE_WORKSPACE',
+          mustChangePassword: false,
         });
         creados++;
       }
