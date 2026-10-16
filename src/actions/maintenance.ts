@@ -18,11 +18,10 @@ export async function toggleMaintenanceAction() {
   const nextState = !current;
   const strVal = nextState ? 'true' : 'false';
 
-  // 2. Modificar process.env en memoria para impacto inmediato en la sesión actual
+  // 2. Modificar process.env en memoria en el servidor
   process.env.MAINTENANCE_MODE = strVal;
-  process.env.NEXT_PUBLIC_MAINTENANCE_MODE = strVal;
 
-  // 3. Persistir en el archivo .env para sobrevivir a reinicios de PM2 o del VPS
+  // 3. Persistir en el archivo .env para sobrevivir a reinicios
   try {
     const envPath = path.join(process.cwd(), '.env');
     if (fs.existsSync(envPath)) {
@@ -43,10 +42,11 @@ export async function toggleMaintenanceAction() {
     console.warn('No se pudo escribir en .env, cambio activo en memoria:', err);
   }
 
-  // 4. Registro inmutable en la auditoría forense de seguridad
+  // 4. Registro inmutable en la auditoría forense con category requerida
   try {
     await db.insert(auditSecurityLogs).values({
       timestamp: new Date().toISOString(),
+      category: 'SYSTEM',
       severity: nextState ? 'HIGH' : 'MEDIUM',
       action: nextState ? 'MAINTENANCE_ENABLED' : 'MAINTENANCE_DISABLED',
       actorId: `${session.fullName} (${session.userId})`,
