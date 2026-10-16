@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { loginAction } from "@/actions/auth";
 import SchoolLogo from "@/components/SchoolLogo";
 import Link from "next/link";
 
-export default function AccesoInstitucionalPage() {
+function AccesoInstitucionalForm() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
 
@@ -19,12 +19,12 @@ export default function AccesoInstitucionalPage() {
     (errorParam === "sin_permisos"
       ? "Tu cuenta oficial de Google no tiene permisos asignados en el CMS. Contacta a Dirección."
       : errorParam === "dominio_no_autorizado"
-      ? "Acceso denegado: Solo se permiten cuentas oficiales del colegio (@ipem10.edu.ar)."
-      : errorParam === "cuenta_suspendida"
-      ? "Tu cuenta institucional se encuentra suspendida."
-      : errorParam === "falla_google"
-      ? "No se pudo validar la sesión con Google. Asegúrate de ingresar desde http://localhost:3000."
-      : null);
+        ? "Acceso denegado: Solo se permiten cuentas oficiales del colegio (@ipem10.edu.ar)."
+        : errorParam === "cuenta_suspendida"
+          ? "Tu cuenta institucional se encuentra suspendida."
+          : errorParam === "falla_google"
+            ? "No se pudo validar la sesión con Google. Asegúrate de ingresar desde http://localhost:3000."
+            : null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -171,5 +171,20 @@ export default function AccesoInstitucionalPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AccesoInstitucionalPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-b from-emerald-950 via-slate-950 to-green-950 flex flex-col items-center justify-center text-slate-300">
+          <div className="animate-spin rounded-full h-9 w-9 border-b-2 border-emerald-400 mb-3"></div>
+          <p className="text-xs text-emerald-300/80 font-medium">Iniciando portal de acceso institucional...</p>
+        </div>
+      }
+    >
+      <AccesoInstitucionalForm />
+    </Suspense>
   );
 }

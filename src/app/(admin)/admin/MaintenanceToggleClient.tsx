@@ -20,7 +20,7 @@ export default function MaintenanceToggleClient({ initialIsMaintenance }: { init
     const res = await toggleMaintenanceAction();
     setLoading(false);
 
-    if (res.success) {
+    if (res.success && typeof res.isMaintenance === 'boolean') {
       setIsMaintenance(res.isMaintenance);
       setMsg(res.isMaintenance ? '⚠️ Mantenimiento activado en la web y en RomaBot.' : '🚀 Sitio y RomaBot abiertos al público.');
     } else {
