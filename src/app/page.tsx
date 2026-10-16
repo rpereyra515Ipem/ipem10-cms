@@ -6,51 +6,72 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
+function formatDate(dateValue: any) {
+  if (!dateValue) return 'Reciente';
+  try {
+    return new Date(dateValue).toLocaleDateString('es-AR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  } catch {
+    return 'Reciente';
+  }
+}
+
 export default async function HomePage() {
-  const latestPosts = await db.select().from(posts).orderBy(desc(posts.createdAt)).limit(4);
+  const latestPosts = await db.select().from(posts).orderBy(desc(posts.createdAt)).limit(7);
   const urgentPost = latestPosts.find((p) => p.isUrgent);
 
+  const featuredPost = latestPosts[0];
+  const secondaryPosts = latestPosts.slice(1, 7);
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      {/* Banner de Aviso Urgente */}
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-800 selection:text-white">
+      {/* 1. Aviso urgente */}
       {urgentPost && (
-        <aside aria-label="Aviso urgente" className="bg-red-800 text-white px-4 py-2.5 text-center text-sm font-semibold flex items-center justify-center gap-2 shadow-inner">
-          <span className="animate-pulse bg-red-900 px-2 py-0.5 rounded text-xs font-bold">COMUNICADO URGENTE</span>
-          <Link href={`/noticias/${urgentPost.slug}`} className="underline hover:text-red-100 font-bold">
-            {urgentPost.title}
+        <aside aria-label="Aviso urgente" className="bg-red-800 text-white px-4 py-2.5 text-center text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-inner sticky top-0 z-50">
+          <span className="animate-pulse bg-red-950 text-red-200 border border-red-700/60 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
+            COMUNICADO URGENTE
+          </span>
+          <Link href={`/noticias/${urgentPost.slug}`} className="underline hover:text-red-100 font-bold tracking-tight">
+            <span>{urgentPost.title} →</span>
           </Link>
         </aside>
       )}
 
-      {/* Barra de Navegación Institucional Limpia */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 h-16 sm:h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <SchoolLogo size="md" className="group-hover:scale-105 transition transform" />
-            <div className="hidden sm:block">
-              <span className="font-black text-emerald-950 text-lg sm:text-xl block leading-tight tracking-tight whitespace-nowrap">
-                IPEM N° 10 Roma
-              </span>
-              <span className="hidden sm:block text-xs text-gray-500 font-medium">
+      {/* 2. Barra de navegación */}
+      <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-40 shadow-sm transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3.5 group">
+            <SchoolLogo size="md" className="group-hover:scale-105 transition-transform duration-300 drop-shadow-sm" />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-black text-emerald-950 text-lg sm:text-xl leading-none tracking-tight">
+                  IPEM N° 10 Roma
+                </span>
+                <span className="hidden md:inline-block text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                  CUE 1404728-00
+                </span>
+              </div>
+              <span className="hidden sm:block text-xs text-slate-500 font-medium mt-0.5">
                 Padre Lozano 375 • Alto Alberdi, Córdoba
               </span>
             </div>
           </Link>
 
-          <nav className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <nav className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Link
               href="/institucional"
-              className="text-[11px] sm:text-sm font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 transition flex items-center gap-1 shadow-sm whitespace-nowrap"
-              title="Historia, orientación e identidad del colegio"
+              className="text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-xl text-slate-700 hover:text-emerald-950 hover:bg-slate-100/90 transition-all flex items-center gap-1.5"
             >
               <span>🏛️</span>
-              <span>Institucional</span>
+              <span className="hidden sm:inline">Institucional</span>
             </Link>
 
             <Link
               href="/docentes"
-              className="text-[11px] sm:text-sm font-bold whitespace-nowrap px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-emerald-950 bg-emerald-100/70 hover:bg-emerald-200/80 border border-emerald-300/80 transition flex items-center gap-1"
-              title="Sala de Profesores Digital"
+              className="text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 rounded-xl text-emerald-900 bg-emerald-50 hover:bg-emerald-100/90 border border-emerald-200/80 transition-all flex items-center gap-1.5 shadow-sm"
             >
               <span>👨‍🏫</span>
               <span>Docentes</span>
@@ -58,189 +79,301 @@ export default async function HomePage() {
 
             <Link
               href="/acceso-institucional"
-              className="text-[11px] sm:text-sm font-bold whitespace-nowrap px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-white bg-slate-900 hover:bg-emerald-900 transition flex items-center gap-1 shadow-sm"
-              title="Acceso Institucional y Gestión"
+              className="text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2 rounded-xl text-white bg-emerald-950 hover:bg-emerald-900 border border-emerald-800 transition-all flex items-center gap-1.5 shadow-sm"
             >
               <span>🔒</span>
-              <span>Gestión</span>
+              <span className="hidden sm:inline">Gestión</span>
             </Link>
           </nav>
         </div>
       </header>
 
-      {/* Hero Institucional */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-950 via-emerald-900 to-green-950 text-white py-16 px-4 border-b border-emerald-800">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+      {/* 3. Hero Principal Refinado */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-950 text-white pt-16 pb-24 px-4 sm:px-6 lg:px-8 border-b-4 border-amber-500 shadow-xl">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="flex justify-center mb-4">
-            <SchoolLogo size="lg" className="drop-shadow-2xl hover:scale-105 transition transform" />
+        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-4">
+          <div className="flex justify-center mb-2">
+            <div className="p-2.5 rounded-full bg-emerald-900/60 border border-emerald-700/60 shadow-2xl backdrop-blur-sm">
+              <SchoolLogo size="lg" className="drop-shadow-2xl hover:scale-105 transition-transform duration-300" />
+            </div>
           </div>
 
-          <span className="inline-block text-xs uppercase tracking-widest font-extrabold text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3.5 py-1 rounded-full mb-3">
-            Educación Secundaria Pública • Córdoba Capital
-          </span>
-          <h1 className="text-4xl sm:text-5xl font-black tracking-tight mb-4 text-white">
-            Instituto Provincial de Educación Media N° 10
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-widest text-amber-300 bg-amber-400/10 border border-amber-400/30">
+            <span>⭐</span>
+            <span>Educación Secundaria Pública • Córdoba Capital</span>
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+            IPEM N° 10 <span className="text-amber-300 font-extrabold tracking-normal">"Roma"</span>
           </h1>
-          <p className="text-base sm:text-xl text-emerald-100/90 max-w-2xl mx-auto font-light leading-relaxed">
-            Comunidad educativa de Barrio Alto Alberdi. Formando jóvenes con sentido crítico, valores y compromiso con el futuro.
+
+          <p className="text-xs sm:text-sm font-medium text-emerald-300/80 uppercase tracking-widest">
+            Instituto Provincial de Educación Media • CUE 1404728-00
           </p>
+
+          <p className="text-sm sm:text-base text-emerald-100/90 max-w-2xl mx-auto font-light leading-relaxed pt-1">
+            Comunidad educativa de Barrio Alto Alberdi. Formando jóvenes con sentido crítico, valores democráticos y orientación en Informática.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+            <span className="text-xs bg-emerald-900/80 border border-emerald-700/60 px-3 py-1 rounded-full text-emerald-200 font-medium">
+              💻 Bachiller en Informática
+            </span>
+            <span className="text-xs bg-emerald-900/80 border border-emerald-700/60 px-3 py-1 rounded-full text-emerald-200 font-medium">
+              ⏰ Turno Mañana y Tarde
+            </span>
+            <span className="text-xs bg-emerald-900/80 border border-emerald-700/60 px-3 py-1 rounded-full text-emerald-200 font-medium">
+              📍 Padre Lozano 375
+            </span>
+          </div>
         </div>
       </section>
 
-      {/* Accesos Rápidos Principales (7 Tarjetas en 1 Sola Línea) */}
-      <section className="max-w-6xl mx-auto px-4 -mt-8 mb-12 w-full relative z-20">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
-          {/* 1. Preceptoría (PRIMERO) */}
+      {/* 4. Las 7 Tarjetas Flotantes */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 mb-14 w-full relative z-20">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           <Link
             href="/preceptoria"
-            className="bg-white p-3 rounded-xl border-2 border-rose-200 shadow-sm hover:border-rose-400 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+            className="group bg-white p-3.5 rounded-2xl border border-slate-200 shadow-md hover:shadow-xl hover:border-emerald-500 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between items-center text-center"
           >
-            <div>
-              <span className="text-2xl block mb-1">🧑‍🏫</span>
-              <h3 className="font-bold text-gray-900 text-xs leading-tight">Preceptoría</h3>
-              <p className="text-[10px] text-rose-600 font-semibold mt-0.5 leading-tight">Horas libres y avisos</p>
-            </div>
+            <span className="text-2xl mb-1 transform group-hover:scale-110 transition-transform">🧑‍🏫</span>
+            <h3 className="font-bold text-slate-900 text-xs leading-tight group-hover:text-emerald-900 transition-colors">Preceptoría</h3>
+            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full mt-1.5 border border-emerald-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              En vivo
+            </span>
           </Link>
 
-          {/* 2. Mesas de Examen */}
           <Link
             href="/mesas"
-            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+            className="group bg-white p-3.5 rounded-2xl border border-slate-200 shadow-md hover:shadow-xl hover:border-emerald-500 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between items-center text-center"
           >
-            <div>
-              <span className="text-2xl block mb-1">📅</span>
-              <h3 className="font-bold text-gray-900 text-xs leading-tight">Mesas de Examen</h3>
-              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Turnos y fechas</p>
-            </div>
+            <span className="text-2xl mb-1 transform group-hover:scale-110 transition-transform">📅</span>
+            <h3 className="font-bold text-slate-900 text-xs leading-tight group-hover:text-emerald-900 transition-colors">Mesas de Examen</h3>
+            <p className="text-[10px] text-slate-500 mt-1 leading-tight">Turnos y fechas</p>
           </Link>
 
-          {/* 3. Tutorías */}
           <Link
             href="/tutorias"
-            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+            className="group bg-white p-3.5 rounded-2xl border border-slate-200 shadow-md hover:shadow-xl hover:border-emerald-500 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between items-center text-center"
           >
-            <div>
-              <span className="text-2xl block mb-1">🎯</span>
-              <h3 className="font-bold text-gray-900 text-xs leading-tight">Tutorías</h3>
-              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Clases de apoyo</p>
-            </div>
+            <span className="text-2xl mb-1 transform group-hover:scale-110 transition-transform">🎯</span>
+            <h3 className="font-bold text-slate-900 text-xs leading-tight group-hover:text-emerald-900 transition-colors">Tutorías</h3>
+            <p className="text-[10px] text-slate-500 mt-1 leading-tight">Clases de apoyo</p>
           </Link>
 
-          {/* 4. Programas */}
           <Link
             href="/descargas?cat=PROGRAMA"
-            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+            className="group bg-white p-3.5 rounded-2xl border border-slate-200 shadow-md hover:shadow-xl hover:border-emerald-500 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between items-center text-center"
           >
-            <div>
-              <span className="text-2xl block mb-1">📚</span>
-              <h3 className="font-bold text-gray-900 text-xs leading-tight">Programas</h3>
-              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Materias previas</p>
-            </div>
+            <span className="text-2xl mb-1 transform group-hover:scale-110 transition-transform">📚</span>
+            <h3 className="font-bold text-slate-900 text-xs leading-tight group-hover:text-emerald-900 transition-colors">Programas</h3>
+            <p className="text-[10px] text-slate-500 mt-1 leading-tight">Materias previas</p>
           </Link>
 
-          {/* 5. Biblioteca */}
           <Link
             href="/biblioteca"
-            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+            className="group bg-white p-3.5 rounded-2xl border border-slate-200 shadow-md hover:shadow-xl hover:border-emerald-500 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between items-center text-center"
           >
-            <div>
-              <span className="text-2xl block mb-1">📖</span>
-              <h3 className="font-bold text-gray-900 text-xs leading-tight">Biblioteca</h3>
-              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Libros y recursos</p>
-            </div>
+            <span className="text-2xl mb-1 transform group-hover:scale-110 transition-transform">📖</span>
+            <h3 className="font-bold text-slate-900 text-xs leading-tight group-hover:text-emerald-900 transition-colors">Biblioteca</h3>
+            <p className="text-[10px] text-slate-500 mt-1 leading-tight">Libros y material</p>
           </Link>
 
-          {/* 6. Secretaría (Reemplaza a Trámites y CUS) */}
           <Link
             href="/secretaria"
-            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+            className="group bg-white p-3.5 rounded-2xl border border-slate-200 shadow-md hover:shadow-xl hover:border-emerald-500 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between items-center text-center"
           >
-            <div>
-              <span className="text-2xl block mb-1">🏢</span>
-              <h3 className="font-bold text-gray-900 text-xs leading-tight">Secretaría</h3>
-              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Trámites y CUS</p>
-            </div>
+            <span className="text-2xl mb-1 transform group-hover:scale-110 transition-transform">🏢</span>
+            <h3 className="font-bold text-slate-900 text-xs leading-tight group-hover:text-emerald-900 transition-colors">Secretaría</h3>
+            <span className="inline-flex items-center text-[10px] text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded-full mt-1 border border-amber-200">
+              Trámites y CUS
+            </span>
           </Link>
 
-          {/* 7. Cooperadora */}
           <Link
             href="/cooperadora"
-            className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-amber-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
+            className="group bg-white p-3.5 rounded-2xl border border-slate-200 shadow-md hover:shadow-xl hover:border-amber-500 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between items-center text-center"
           >
-            <div>
-              <span className="text-2xl block mb-1">🤝</span>
-              <h3 className="font-bold text-gray-900 text-xs leading-tight">Cooperadora</h3>
-              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Cómo colaborar</p>
-            </div>
+            <span className="text-2xl mb-1 transform group-hover:scale-110 transition-transform">🤝</span>
+            <h3 className="font-bold text-slate-900 text-xs leading-tight group-hover:text-amber-800 transition-colors">Cooperadora</h3>
+            <p className="text-[10px] text-slate-500 mt-1 leading-tight">Comunidad activa</p>
           </Link>
         </div>
       </section>
 
-      {/* Tablón de Novedades */}
-      <main className="max-w-6xl mx-auto px-4 mb-16 w-full flex-1">
-        <div className="flex justify-between items-center mb-6">
+      {/* 5. Noticias en Layout Editorial */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 w-full flex-1">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-slate-200 gap-2">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight">Novedades y Comunicados</h2>
-            <p className="text-xs sm:text-sm text-gray-500">Publicaciones oficiales del IPEM 10 Roma</p>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+              <span className="text-xs font-black uppercase tracking-wider text-emerald-800">
+                Prensa y Comunicados
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
+              Novedades y Vida Institucional
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Publicaciones oficiales, proyectos pedagógicos y avisos del IPEM N° 10 Roma.
+            </p>
           </div>
-          <Link href="/acceso-institucional" className="text-[11px] sm:text-sm font-bold whitespace-nowrap text-emerald-700 hover:underline flex items-center gap-1">
-            <span>🔒</span> Acceso Panel de Gestión →
+
+          <Link
+            href="/acceso-institucional"
+            className="text-xs font-bold text-slate-700 hover:text-emerald-900 bg-white hover:bg-slate-50 border border-slate-300 px-3.5 py-1.5 rounded-xl transition shadow-sm inline-flex items-center gap-1.5 self-start sm:self-auto"
+          >
+            <span>🔒</span>
+            <span>Panel de Gestión</span>
           </Link>
         </div>
 
         {latestPosts.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-2xl border">
-            <p className="text-gray-500">Aún no hay publicaciones en el sitio.</p>
+          <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <span className="text-4xl block mb-2">📰</span>
+            <h3 className="text-base font-bold text-slate-700">Aún no hay publicaciones en el portal</h3>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latestPosts.map((post) => (
-              <article key={post.id} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition flex flex-col">
-                {post.imageUrl && (
-                  <div className="h-48 bg-gray-100 overflow-hidden border-b">
-                    <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
-                  </div>
-                )}
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <span className="text-xs font-black tracking-wider text-emerald-800 uppercase bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md">
-                      {post.type}
+          <div className="space-y-6">
+            {/* Noticia Principal Destacada (Con Soporte de Foto Real + Escudo de Respaldo) */}
+            {featuredPost && (
+              <article className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 group">
+                <div className="lg:col-span-5 h-56 sm:h-72 lg:h-auto bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-950 relative overflow-hidden flex flex-col items-center justify-center p-6 text-center select-none">
+                  {/* Escudo de respaldo institucional (visible si no hay foto) */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center pointer-events-none">
+                    <div className="relative z-10 transform group-hover:scale-105 transition-transform duration-300">
+                      <SchoolLogo size="lg" className="drop-shadow-2xl" />
+                    </div>
+                    <span className="text-xs font-black uppercase tracking-widest text-emerald-200 mt-3 relative z-10">
+                      IPEM N° 10 Roma
                     </span>
-                    <h3 className="font-bold text-gray-900 text-lg mt-3 mb-2 leading-snug">
-                      <Link href={`/noticias/${post.slug}`} className="hover:text-emerald-700 transition">
-                        {post.title}
+                  </div>
+
+                  {/* Foto real (si existe, se superpone y cubre el fondo) */}
+                  {featuredPost.imageUrl && (
+                    <img
+                      src={featuredPost.imageUrl}
+                      alt=""
+                      className="w-full h-full object-cover relative z-10 group-hover:scale-105 transition-transform duration-500"
+                    />
+                  )}
+
+                  <span className="absolute top-4 left-4 text-[10px] font-black tracking-wider uppercase bg-amber-400 text-emerald-950 px-3 py-1 rounded-full shadow-md z-20">
+                    Destacada • {featuredPost.type}
+                  </span>
+                </div>
+
+                <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-4">
+                  <div className="space-y-3">
+                    <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+                      <span>🗓️</span>
+                      {formatDate(featuredPost.publishedAt)}
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug group-hover:text-emerald-800 transition-colors">
+                      <Link href={`/noticias/${featuredPost.slug}`}>
+                        {featuredPost.title}
                       </Link>
                     </h3>
-                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                      {post.excerpt || 'Haz clic para leer el comunicado institucional completo.'}
+                    <p className="text-slate-600 text-sm sm:text-base line-clamp-3 leading-relaxed">
+                      {featuredPost.excerpt || 'Haz clic para leer el comunicado completo emitido por la institución.'}
                     </p>
                   </div>
-                  <div className="border-t pt-4 flex justify-between items-center text-xs text-gray-500 font-medium">
-                    <span>
-                      {post.publishedAt
-                        ? new Date(post.publishedAt).toLocaleDateString('es-AR', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })
-                        : 'Reciente'}
-                    </span>
-                    <Link href={`/noticias/${post.slug}`} className="font-bold text-emerald-700 hover:underline">
-                      Leer comunicado →
+
+                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-xs text-slate-500 font-medium">Lectura estimada: 2 min</span>
+                    <Link
+                      href={`/noticias/${featuredPost.slug}`}
+                      className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-emerald-800 group-hover:text-emerald-950 group-hover:underline"
+                    >
+                      <span>Leer comunicado completo →</span>
                     </Link>
                   </div>
                 </div>
               </article>
-            ))}
+            )}
+
+            {/* Fila de Noticias Secundarias (Con Soporte de Foto Real + Escudo de Respaldo) */}
+            {secondaryPosts.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+                {secondaryPosts.map((post) => (
+                  <article
+                    key={post.id}
+                    className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="h-44 bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-950 relative overflow-hidden flex flex-col items-center justify-center p-4 text-center select-none">
+                        {/* Escudo de respaldo institucional */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center pointer-events-none">
+                          <div className="relative z-10 transform group-hover:scale-105 transition-transform duration-300">
+                            <SchoolLogo size="md" className="drop-shadow-lg" />
+                          </div>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-200 mt-2 relative z-10">
+                            IPEM N° 10 Roma
+                          </span>
+                        </div>
+
+                        {/* Foto real */}
+                        {post.imageUrl && (
+                          <img
+                            src={post.imageUrl}
+                            alt=""
+                            className="w-full h-full object-cover relative z-10 group-hover:scale-105 transition-transform duration-500"
+                          />
+                        )}
+
+                        <span className="absolute top-3 left-3 text-[10px] font-black tracking-wider uppercase bg-emerald-100 text-emerald-900 border border-emerald-200 px-2.5 py-0.5 rounded-full shadow-sm z-20">
+                          {post.type}
+                        </span>
+                      </div>
+
+                      <div className="p-5 space-y-2">
+                        <span className="text-[11px] font-medium text-slate-400 block">
+                          {formatDate(post.publishedAt)}
+                        </span>
+                        <h4 className="font-bold text-slate-900 text-base leading-snug line-clamp-2 group-hover:text-emerald-800 transition-colors">
+                          <Link href={`/noticias/${post.slug}`}>
+                            {post.title}
+                          </Link>
+                        </h4>
+                        <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed">
+                          {post.excerpt || 'Consulta el comunicado institucional completo.'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-5 pt-0 border-t border-slate-100 mt-3 flex justify-between items-center text-xs">
+                      <span className="text-slate-400 text-[11px]">Comunidad IPEM</span>
+                      <Link
+                        href={`/noticias/${post.slug}`}
+                        className="font-bold text-emerald-800 hover:text-emerald-950 hover:underline inline-flex items-center gap-1"
+                      >
+                        <span>Leer más →</span>
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {/* Enlace al Archivo Histórico */}
+            <div className="text-center pt-8">
+              <Link
+                href="/noticias"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white hover:bg-emerald-50 text-emerald-900 border border-slate-200 hover:border-emerald-300 font-bold text-xs transition shadow-sm hover:shadow"
+              >
+                <span>Ver archivo histórico de comunicados</span>
+                <span>→</span>
+              </Link>
+            </div>
           </div>
         )}
       </main>
 
-      {/* Pie Institucional */}
-      <footer className="bg-emerald-950 text-emerald-200 py-12 border-t border-emerald-900 mt-auto">
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+      {/* 6. Pie Institucional */}
+      <footer className="bg-emerald-950 text-emerald-200 py-12 border-t-4 border-amber-500 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
           <div>
             <div className="flex items-center gap-3 mb-3">
               <SchoolLogo size="sm" />
@@ -251,12 +384,19 @@ export default async function HomePage() {
             </p>
             <p className="text-emerald-300/80 text-xs mt-2">CUE Oficial: <strong className="text-white">1404728-00</strong></p>
           </div>
+
           <div>
             <h4 className="text-white font-bold text-base mb-2">Ubicación y Turnos</h4>
             <p className="text-emerald-300/80 text-xs leading-relaxed">Padre Lozano 375, Barrio Alto Alberdi</p>
             <p className="text-emerald-300/80 text-xs">Córdoba Capital, CP X5003</p>
-            <p className="text-emerald-300/80 text-xs mt-2 font-medium text-amber-300">Turno Mañana | Turno Tarde</p>
+            <p className="text-emerald-300/80 text-xs mt-2 font-medium text-amber-300">
+              Turno Mañana (07:30 a 13:00) | Turno Tarde (13:15 a 18:45)
+            </p>
+            <p className="text-emerald-300/70 text-xs mt-2 border-t border-emerald-900/80 pt-2">
+              🚌 <strong>Colectivos:</strong> Líneas 40, 41, 42, 44, 70, 72 y 80.
+            </p>
           </div>
+
           <div>
             <h4 className="text-white font-bold text-base mb-2">Comunidad Escolar</h4>
             <ul className="text-xs text-emerald-300/80 space-y-1.5">
@@ -267,32 +407,35 @@ export default async function HomePage() {
               <li><Link href="/cooperadora" className="hover:text-white">Asociación Cooperadora</Link></li>
             </ul>
           </div>
+
           <div>
             <h4 className="text-white font-bold text-base mb-2">Acceso Administrativo</h4>
             <p className="text-emerald-300/80 text-xs leading-relaxed">
-              Exclusivo para directivos y secretaría:
+              Exclusivo para equipo directivo, secretaría y docentes:
             </p>
             <div className="mt-3">
-              <Link href="/acceso-institucional" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1 border border-slate-700 shadow-sm">
-                <span>🔒</span> Iniciar Sesión de Gestión →
+              <Link
+                href="/acceso-institucional"
+                className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-xl font-bold transition inline-flex items-center gap-1.5 border border-slate-700 shadow-sm"
+              >
+                <span>🔒</span>
+                <span>Ingreso Institucional →</span>
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Firma del Webmaster y Contacto Comercial */}
-        <div className="max-w-6xl mx-auto px-4 border-t border-emerald-900/80 mt-10 pt-6 pb-24 sm:pb-8 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs text-emerald-300/80 lg:pr-72">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-emerald-900 mt-10 pt-6 pb-24 sm:pb-8 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs text-emerald-300/80">
           <p className="text-center lg:text-left">© {new Date().getFullYear()} IPEM N° 10 Roma. Todos los derechos reservados.</p>
           <div className="flex flex-wrap items-center justify-center gap-2 bg-emerald-900/60 px-4 py-2 rounded-full border border-emerald-700/70 shadow-lg">
             <span className="text-emerald-200">💻 Webmaster y Desarrollo:</span>
             <span className="font-bold text-white">Lic. Rafael Pereyra</span>
             <span className="text-emerald-600 hidden sm:inline">•</span>
             <a
-              href="https://wa.me/5493516198503?text=Hola%20Lic.%20Rafael,%20vi%20la%20plataforma%20del%20IPEM%2010%20y%20quisiera%20consultar%20por%20este%20sistema%20para%20mi%20colegio"
+              href="https://wa.me/5493516198503"
               target="_blank"
               rel="noopener noreferrer"
               className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 hover:underline transition"
-              title="Consultar por este CMS para otra institución"
             >
               <span>📲 Contactar por WhatsApp</span>
             </a>

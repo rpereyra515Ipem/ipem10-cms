@@ -25,10 +25,8 @@ export default async function SecretariaPage() {
                                 </span>
                             </div>
                             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                                <svg className="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                </svg>
-                                Secretaría Docente y Administrativa
+                                <span>🏢</span>
+                                <span>Secretaría Docente y Administrativa</span>
                             </h1>
                         </div>
                     </div>
@@ -38,10 +36,7 @@ export default async function SecretariaPage() {
                             href="/"
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-emerald-100 hover:text-white font-medium text-sm transition-colors border border-emerald-700 shadow-sm"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            <span>Volver al Inicio</span>
+                            <span>← Volver al Inicio</span>
                         </Link>
 
                         <Link
@@ -59,10 +54,8 @@ export default async function SecretariaPage() {
                 <section className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="flex items-start gap-4">
-                            <div className="p-3 bg-emerald-50 rounded-xl text-emerald-700 border border-emerald-100">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                            <div className="p-3 bg-emerald-50 rounded-xl text-emerald-700 border border-emerald-100 text-2xl">
+                                ⏰
                             </div>
                             <div>
                                 <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">Horario de Atención</h3>
@@ -75,10 +68,8 @@ export default async function SecretariaPage() {
                         </div>
 
                         <div className="flex items-start gap-4">
-                            <div className="p-3 bg-amber-50 rounded-xl text-amber-700 border border-amber-100">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
+                            <div className="p-3 bg-amber-50 rounded-xl text-amber-700 border border-amber-100 text-2xl">
+                                ✉️
                             </div>
                             <div>
                                 <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">Contacto Oficial</h3>
@@ -93,10 +84,8 @@ export default async function SecretariaPage() {
                         </div>
 
                         <div className="flex items-start gap-4">
-                            <div className="p-3 bg-blue-50 rounded-xl text-blue-700 border border-blue-100">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                            <div className="p-3 bg-blue-50 rounded-xl text-blue-700 border border-blue-100 text-2xl">
+                                📋
                             </div>
                             <div>
                                 <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wide">Plazos de Confección</h3>
@@ -136,9 +125,7 @@ export default async function SecretariaPage() {
                                     href="/secretaria/carga-masiva"
                                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-emerald-950 font-bold text-sm transition shadow"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
+                                    <span>👥</span>
                                     <span>Carga Masiva Docente</span>
                                 </Link>
                             </div>
@@ -152,10 +139,8 @@ export default async function SecretariaPage() {
                 <section className="space-y-4">
                     <div className="border-b border-slate-200 pb-2">
                         <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Mesa de Entradas Digital para Alumnos y Familias
+                            <span>📄</span>
+                            <span>Mesa de Entradas Digital para Alumnos y Familias</span>
                         </h2>
                         <p className="text-xs text-slate-500">
                             Solicitá tu constancia o consultá si tu documento ya está firmado sin moverte de tu casa.
@@ -169,10 +154,8 @@ export default async function SecretariaPage() {
                 <section className="space-y-4">
                     <div className="border-b border-slate-200 pb-2">
                         <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Formularios Oficiales y Salud Escolar (Descarga Libre)
+                            <span>📥</span>
+                            <span>Formularios Oficiales y Salud Escolar (Descarga Libre)</span>
                         </h2>
                         <p className="text-xs text-slate-500">Documentación oficial para descargar, imprimir y presentar en el colegio.</p>
                     </div>

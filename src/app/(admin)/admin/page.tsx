@@ -4,6 +4,9 @@ import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { sql, and, gte, inArray, desc } from 'drizzle-orm';
+import MaintenanceToggleClient from './MaintenanceToggleClient';
+import AuditLogsTableClient from './AuditLogsTableClient';
+import GestionModulesAccordion from './GestionModulesAccordion';
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
@@ -14,6 +17,7 @@ export default async function AdminDashboardPage() {
   const isMaster = session.role === 'MASTER';
   const isSecretaria = session.role === 'SECRETARIA';
   const isDirectivo = session.role === 'DIRECTIVO';
+  const isMaintenance = process.env.MAINTENANCE_MODE === 'true';
 
   // Métricas escolares
   const [postsCount] = await db.select({ count: sql<number>`count(*)` }).from(posts);
@@ -22,7 +26,7 @@ export default async function AdminDashboardPage() {
   const [memosCount] = await db.select({ count: sql<number>`count(*)` }).from(memos);
   const [usersCount] = await db.select({ count: sql<number>`count(*)` }).from(users);
 
-  // Métricas y registros exclusivos para el MASTER
+  // Métricas exclusivas para el MASTER
   let auditTotal = 0;
   let criticalTotal = 0;
   let recentAuditLogs: any[] = [];
@@ -53,7 +57,7 @@ export default async function AdminDashboardPage() {
       .select()
       .from(auditSecurityLogs)
       .orderBy(desc(auditSecurityLogs.timestamp))
-      .limit(5);
+      .limit(10);
   }
 
   return (
@@ -62,7 +66,6 @@ export default async function AdminDashboardPage() {
       {/* 1. CABECERA DIFERENCIADA POR ROL */}
       {/* ========================================================= */}
       {isMaster ? (
-        // CABECERA EXCLUSIVA DEL MASTER (Dorado, Púrpura y Alta Jerarquía)
         <div className="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 border-2 border-amber-500/70 shadow-2xl rounded-2xl p-6 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -98,7 +101,6 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
       ) : isSecretaria ? (
-        // CABECERA EXCLUSIVA DE SECRETARÍA (Esmeralda y Dorado Institucional)
         <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border-2 border-amber-500/50 shadow-lg rounded-2xl p-6 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -135,7 +137,6 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
       ) : (
-        // CABECERA DEL DIRECTIVO (Institucional Escolar)
         <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border border-emerald-800 shadow-lg rounded-2xl p-6 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -162,7 +163,7 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* ========================================================= */}
-      {/* 2. CENTRO DE CIBERSEGURIDAD Y CONTROL (SOLO PARA EL MASTER) */}
+      {/* 2. CONSOLA TÉCNICA E INSPECCIÓN FORENSE (SOLO PARA EL MASTER) */}
       {/* ========================================================= */}
       {isMaster && (
         <div className="bg-slate-900 border border-purple-900/60 rounded-2xl p-6 shadow-xl text-white space-y-6">
@@ -178,6 +179,10 @@ export default async function AdminDashboardPage() {
             </span>
           </div>
 
+          {/* Interruptor Maestro de Mantenimiento */}
+          <MaintenanceToggleClient initialIsMaintenance={isMaintenance} />
+
+          {/* Métricas del Master */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
               <span className="text-xs font-bold text-slate-400 block mb-1">Eventos Auditados (7 días)</span>
@@ -200,77 +205,25 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
+          {/* Tabla Interactiva con Clic para Inspección Forense */}
           <div>
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-              Últimos eventos registrados en el servidor
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 text-slate-400 font-bold uppercase text-[10px] border-b border-slate-800">
-                  <tr>
-                    <th className="p-2.5">Fecha</th>
-                    <th className="p-2.5">Severidad</th>
-                    <th className="p-2.5">Acción</th>
-                    <th className="p-2.5">Actor</th>
-                    <th className="p-2.5">IP</th>
-                    <th className="p-2.5">Estado</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y border-slate-800/60 font-mono text-[11px]">
-                  {recentAuditLogs.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="p-4 text-center text-slate-500">
-                        No hay eventos recientes registrados.
-                      </td>
-                    </tr>
-                  ) : (
-                    recentAuditLogs.map((log) => {
-                      const sevBadge =
-                        log.severity === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border-rose-800' :
-                          log.severity === 'HIGH' ? 'bg-amber-950 text-amber-300 border-amber-800' :
-                            log.severity === 'MEDIUM' ? 'bg-purple-950 text-purple-300 border-purple-800' :
-                              'bg-emerald-950 text-emerald-300 border-emerald-800';
-
-                      return (
-                        <tr key={log.id} className="hover:bg-slate-800/40">
-                          <td className="p-2.5 text-slate-400 whitespace-nowrap">{log.timestamp}</td>
-                          <td className="p-2.5 whitespace-nowrap">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${sevBadge}`}>
-                              {log.severity}
-                            </span>
-                          </td>
-                          <td className="p-2.5 font-bold text-white whitespace-nowrap">{log.action}</td>
-                          <td className="p-2.5 text-slate-300 whitespace-nowrap">{log.actorId || 'Anónimo'}</td>
-                          <td className="p-2.5 text-slate-400 whitespace-nowrap">{log.ipAddress}</td>
-                          <td className="p-2.5 whitespace-nowrap">
-                            <span className={log.status === 'SUCCESS' ? 'text-emerald-400' : 'text-rose-400'}>
-                              {log.status}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                Últimos eventos registrados en el servidor
+              </h3>
+              <span className="text-[11px] text-purple-400 font-sans font-semibold">
+                👆 Haz clic en cualquier fila para inspeccionar payload y User-Agent
+              </span>
             </div>
+            <AuditLogsTableClient initialLogs={recentAuditLogs} />
           </div>
         </div>
       )}
 
       {/* ========================================================= */}
-      {/* 3. MÓDULOS DE GESTIÓN ESCOLAR Y SECRETARÍA */}
+      {/* 3. MÓDULOS DE GESTIÓN ESCOLAR (COLAPSABLE PARA EL MASTER) */}
       {/* ========================================================= */}
-      <div>
-        <div className="border-b border-gray-200 pb-3 mb-6">
-          <h2 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <span>📚</span> Módulos de Gestión y Operaciones
-          </h2>
-          <p className="text-xs text-gray-500">
-            Administración de personal, novedades, mesas de examen, programas y circulares institucionales.
-          </p>
-        </div>
-
+      <GestionModulesAccordion isMaster={isMaster}>
         {/* Contadores Escolares */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
@@ -296,7 +249,6 @@ export default async function AdminDashboardPage() {
 
         {/* Tarjetas de acceso a módulos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Módulo Prioritario de Secretaría y Carga Masiva */}
           <div className="bg-white rounded-2xl border-2 border-emerald-500/50 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -389,7 +341,7 @@ export default async function AdminDashboardPage() {
             </Link>
           </div>
         </div>
-      </div>
+      </GestionModulesAccordion>
     </div>
   );
 }
