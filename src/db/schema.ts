@@ -3,7 +3,8 @@ import { sql } from 'drizzle-orm';
 
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
-  email: text('email').notNull().unique(),
+  email: text('email').notNull().unique(), // Correo oficial @ipem10.edu.ar (para login)
+  personalEmail: text('personal_email'),   // <-- AQUÍ: Correo personal de contacto (opcional
   passwordHash: text('password_hash').notNull(),
   fullName: text('full_name').notNull(),
   role: text('role', { enum: ['MASTER', 'DIRECTIVO', 'ADMIN', 'SECRETARIA', 'PRECEPTOR', 'DOCENTE'] }).notNull().default('DOCENTE'),
@@ -19,8 +20,8 @@ export const posts = sqliteTable('posts', {
   excerpt: text('excerpt'),
   contentHtml: text('content_html').notNull(),
   imageUrl: text('image_url'),
-  type: text('type', { 
-    enum: ['NOTICIA', 'AVISO_URGENTE', 'MESA_EXAMEN', 'INSTITUCIONAL'] 
+  type: text('type', {
+    enum: ['NOTICIA', 'AVISO_URGENTE', 'MESA_EXAMEN', 'INSTITUCIONAL']
   }).notNull().default('NOTICIA'),
   status: text('status', { enum: ['DRAFT', 'PUBLISHED'] }).notNull().default('DRAFT'),
   isUrgent: integer('is_urgent', { mode: 'boolean' }).notNull().default(false),
@@ -95,8 +96,8 @@ export const preceptoriaNotices = sqliteTable('preceptoria_notices', {
   yearLevel: text('year_level').notNull(), // 1° Año a 6° Año o TODOS
   division: text('division').notNull(),   // A, B, C o TODAS
   shift: text('shift', { enum: ['MAÑANA', 'TARDE', 'AMBOS'] }).notNull().default('MAÑANA'),
-  type: text('type', { 
-    enum: ['HORA_LIBRE', 'CAMBIO_HORARIO', 'CITACION_FAMILIA', 'COMUNICADO_CURSO'] 
+  type: text('type', {
+    enum: ['HORA_LIBRE', 'CAMBIO_HORARIO', 'CITACION_FAMILIA', 'COMUNICADO_CURSO']
   }).notNull().default('COMUNICADO_CURSO'),
   title: text('title').notNull(),
   content: text('content').notNull(),
@@ -108,3 +109,18 @@ export const preceptoriaNotices = sqliteTable('preceptoria_notices', {
 
 export type PreceptoriaNotice = typeof preceptoriaNotices.$inferSelect;
 export type NewPreceptoriaNotice = typeof preceptoriaNotices.$inferInsert;
+export const tramites = sqliteTable('tramites', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  trackingCode: text('tracking_code').notNull().unique(),
+  studentName: text('student_name').notNull(),
+  studentDni: text('student_dni').notNull(),
+  course: text('course').notNull(),
+  requestType: text('request_type').notNull(),
+  purpose: text('purpose'),
+  contactPhone: text('contact_phone'),
+  contactEmail: text('contact_email'),
+  status: text('status').notNull().default('PENDIENTE'),
+  internalNotes: text('internal_notes'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});

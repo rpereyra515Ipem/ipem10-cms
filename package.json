@@ -13,6 +13,7 @@
     "drizzle-orm": "^0.33.0",
     "fast-xml-parser": "^4.4.1",
     "jose": "^5.8.0",
+    "lucide-react": "^1.57.0",
     "next": "^14.2.5",
     "nodemailer": "^10.0.10",
     "react": "^18.3.1",

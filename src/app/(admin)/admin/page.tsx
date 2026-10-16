@@ -8,10 +8,12 @@ import { sql, and, gte, inArray, desc } from 'drizzle-orm';
 export default async function AdminDashboardPage() {
   const session = await getSession();
   if (!session) {
-    redirect('/login');
+    redirect('/acceso-institucional');
   }
 
   const isMaster = session.role === 'MASTER';
+  const isSecretaria = session.role === 'SECRETARIA';
+  const isDirectivo = session.role === 'DIRECTIVO';
 
   // Métricas escolares
   const [postsCount] = await db.select({ count: sql<number>`count(*)` }).from(posts);
@@ -63,7 +65,7 @@ export default async function AdminDashboardPage() {
         // CABECERA EXCLUSIVA DEL MASTER (Dorado, Púrpura y Alta Jerarquía)
         <div className="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 border-2 border-amber-500/70 shadow-2xl rounded-2xl p-6 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-          
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -95,6 +97,43 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
         </div>
+      ) : isSecretaria ? (
+        // CABECERA EXCLUSIVA DE SECRETARÍA (Esmeralda y Dorado Institucional)
+        <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border-2 border-amber-500/50 shadow-lg rounded-2xl p-6 text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="bg-amber-400 text-emerald-950 font-black text-xs px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                  🏢 ROL: SECRETARÍA ESCOLAR Y PERSONAL
+                </span>
+                <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                  Área Administrativa y POF
+                </span>
+              </div>
+              <h1 className="text-2xl font-black text-white tracking-tight">
+                Panel de Secretaría Docente y Gestión de Alumnos
+              </h1>
+              <p className="text-emerald-200/80 text-xs sm:text-sm mt-1">
+                Bienvenido/a, <strong className="text-white font-bold">{session.fullName}</strong>. Gestión de nómina, constancias y trámites.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href="/secretaria/carga-masiva"
+                className="bg-amber-500 hover:bg-amber-400 text-emerald-950 font-black text-xs px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1.5"
+              >
+                <span>📥</span> Carga Masiva (CSV / Sheets)
+              </Link>
+              <Link
+                href="/admin/usuarios"
+                className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2.5 rounded-xl border border-white/20 transition"
+              >
+                👥 Nómina
+              </Link>
+            </div>
+          </div>
+        </div>
       ) : (
         // CABECERA DEL DIRECTIVO (Institucional Escolar)
         <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border border-emerald-800 shadow-lg rounded-2xl p-6 text-white">
@@ -102,7 +141,7 @@ export default async function AdminDashboardPage() {
             <div>
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold px-3 py-0.5 rounded-full uppercase">
-                  🏛️ ROL: DIRECTIVO ESCOLAR
+                  🏛️ ROL: EQUIPO DIRECTIVO
                 </span>
               </div>
               <h1 className="text-2xl font-black text-white tracking-tight">
@@ -123,7 +162,7 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* ========================================================= */}
-      {/* 2. CENTRO DE CIBERSEGURIDAD Y CONTROL (SOLO VISIBLE PARA EL MASTER) */}
+      {/* 2. CENTRO DE CIBERSEGURIDAD Y CONTROL (SOLO PARA EL MASTER) */}
       {/* ========================================================= */}
       {isMaster && (
         <div className="bg-slate-900 border border-purple-900/60 rounded-2xl p-6 shadow-xl text-white space-y-6">
@@ -139,7 +178,6 @@ export default async function AdminDashboardPage() {
             </span>
           </div>
 
-          {/* Tarjetas de métricas del Master */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
               <span className="text-xs font-bold text-slate-400 block mb-1">Eventos Auditados (7 días)</span>
@@ -162,7 +200,6 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Tabla rápida de últimos eventos forenses */}
           <div>
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
               Últimos eventos registrados en el servidor
@@ -179,7 +216,7 @@ export default async function AdminDashboardPage() {
                     <th className="p-2.5">Estado</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+                <tbody className="divide-y border-slate-800/60 font-mono text-[11px]">
                   {recentAuditLogs.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="p-4 text-center text-slate-500">
@@ -190,9 +227,9 @@ export default async function AdminDashboardPage() {
                     recentAuditLogs.map((log) => {
                       const sevBadge =
                         log.severity === 'CRITICAL' ? 'bg-rose-950 text-rose-300 border-rose-800' :
-                        log.severity === 'HIGH' ? 'bg-amber-950 text-amber-300 border-amber-800' :
-                        log.severity === 'MEDIUM' ? 'bg-purple-950 text-purple-300 border-purple-800' :
-                        'bg-emerald-950 text-emerald-300 border-emerald-800';
+                          log.severity === 'HIGH' ? 'bg-amber-950 text-amber-300 border-amber-800' :
+                            log.severity === 'MEDIUM' ? 'bg-purple-950 text-purple-300 border-purple-800' :
+                              'bg-emerald-950 text-emerald-300 border-emerald-800';
 
                       return (
                         <tr key={log.id} className="hover:bg-slate-800/40">
@@ -222,15 +259,15 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* ========================================================= */}
-      {/* 3. MÓDULOS DE GESTIÓN ESCOLAR (COMUNES A TODOS LOS GESTORES) */}
+      {/* 3. MÓDULOS DE GESTIÓN ESCOLAR Y SECRETARÍA */}
       {/* ========================================================= */}
       <div>
         <div className="border-b border-gray-200 pb-3 mb-6">
           <h2 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
-            <span>📚</span> {isMaster ? 'Módulos de Gestión Escolar (Vista de Contenidos)' : 'Módulos de Gestión Escolar'}
+            <span>📚</span> Módulos de Gestión y Operaciones
           </h2>
           <p className="text-xs text-gray-500">
-            Administración de noticias, mesas de examen, programas y circulares institucionales.
+            Administración de personal, novedades, mesas de examen, programas y circulares institucionales.
           </p>
         </div>
 
@@ -258,13 +295,51 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Tarjetas de acceso a módulos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
-            <div className="text-2xl mb-2">📢</div>
-            <h3 className="font-bold text-gray-900 text-base">Noticias y Comunicados Públicos</h3>
-            <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
-              Crea avisos urgentes para la portada, comunicados generales con imágenes y novedades para la comunidad educativa.
-            </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Módulo Prioritario de Secretaría y Carga Masiva */}
+          <div className="bg-white rounded-2xl border-2 border-emerald-500/50 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-2xl">🏢</span>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
+                  Personal & POF
+                </span>
+              </div>
+              <h3 className="font-bold text-gray-900 text-base">Secretaría y Planta Docente</h3>
+              <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
+                Novedades de personal, altas individuales y carga masiva mediante archivo CSV o Google Sheets.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+              <Link
+                href="/secretaria/carga-masiva"
+                className="text-xs font-bold px-3 py-2 bg-amber-500 hover:bg-amber-400 text-emerald-950 rounded-lg shadow-sm"
+              >
+                📥 Carga Masiva
+              </Link>
+              <Link
+                href="/admin/usuarios"
+                className="text-xs font-bold px-3 py-2 border rounded-lg hover:bg-gray-50 text-gray-700"
+              >
+                👥 Ver Nómina
+              </Link>
+              <Link
+                href="/secretaria"
+                className="text-xs font-bold px-3 py-2 text-emerald-700 hover:underline"
+              >
+                Ver Portal →
+              </Link>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div className="text-2xl mb-2">📢</div>
+              <h3 className="font-bold text-gray-900 text-base">Noticias y Comunicados Públicos</h3>
+              <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
+                Crea avisos urgentes para la portada, comunicados generales con imágenes y novedades para la comunidad educativa.
+              </p>
+            </div>
             <div className="flex gap-2">
               <Link href="/admin/publicaciones" className="text-xs font-bold px-4 py-2 border rounded-lg hover:bg-gray-50 text-gray-700">
                 Ver Listado
@@ -275,35 +350,41 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
-            <div className="text-2xl mb-2">📅</div>
-            <h3 className="font-bold text-gray-900 text-base">Cronograma de Mesas de Examen</h3>
-            <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
-              Administra las fechas, horarios, turnos, aulas y tribunales de materias previas, libres y equivalencias.
-            </p>
-            <Link href="/admin/mesas" className="text-xs font-bold px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow inline-block">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div className="text-2xl mb-2">📅</div>
+              <h3 className="font-bold text-gray-900 text-base">Cronograma de Mesas de Examen</h3>
+              <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
+                Administra las fechas, horarios, turnos, aulas y tribunales de materias previas, libres y equivalencias.
+              </p>
+            </div>
+            <Link href="/admin/mesas" className="text-xs font-bold px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg shadow inline-block text-center">
               Gestionar Mesas de Examen →
             </Link>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
-            <div className="text-2xl mb-2">📁</div>
-            <h3 className="font-bold text-gray-900 text-base">Programas de Estudio y Secretaría</h3>
-            <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
-              Sube y actualiza los PDFs de los programas de 1° a 6° año y los formularios descargables para familias.
-            </p>
-            <Link href="/admin/descargas" className="text-xs font-bold px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg shadow inline-block">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div className="text-2xl mb-2">📁</div>
+              <h3 className="font-bold text-gray-900 text-base">Programas de Estudio y Descargas</h3>
+              <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
+                Sube y actualiza los PDFs de los programas de 1° a 6° año y los formularios descargables para familias.
+              </p>
+            </div>
+            <Link href="/admin/descargas" className="text-xs font-bold px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg shadow inline-block text-center">
               Gestionar Repositorio de PDFs →
             </Link>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
-            <div className="text-2xl mb-2">📋</div>
-            <h3 className="font-bold text-gray-900 text-base">Circulares Internas Docentes</h3>
-            <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
-              Emite comunicados exclusivos para directivos, docentes y preceptores en la Sala de Profesores Digital.
-            </p>
-            <Link href="/admin/circulares" className="text-xs font-bold px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg shadow inline-block">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div className="text-2xl mb-2">📋</div>
+              <h3 className="font-bold text-gray-900 text-base">Circulares Internas Docentes</h3>
+              <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
+                Emite comunicados exclusivos para directivos, docentes y preceptores en la Sala de Profesores Digital.
+              </p>
+            </div>
+            <Link href="/admin/circulares" className="text-xs font-bold px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg shadow inline-block text-center">
               Gestionar Circulares Internas →
             </Link>
           </div>

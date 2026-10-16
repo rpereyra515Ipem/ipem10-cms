@@ -41,7 +41,7 @@ export default async function AdminUsuariosPage() {
         </p>
 
         <form action={createUserAction} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
               <label className="block text-xs font-bold text-gray-700 mb-1">Nombre Completo *</label>
               <input
@@ -60,6 +60,18 @@ export default async function AdminUsuariosPage() {
                 placeholder="mariana.lopez@ipem10.edu.ar"
                 className="w-full text-xs p-2.5 border rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 transition"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Correo Personal <span className="font-normal text-gray-400">(Para avisos)</span>
+              </label>
+              <input
+                type="email"
+                name="personalEmail"
+                placeholder="ejemplo@gmail.com"
+                className="w-full text-xs p-2.5 border rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 transition"
               />
             </div>
 
@@ -138,7 +150,14 @@ export default async function AdminUsuariosPage() {
                       </span>
                       {u.fullName} {isSelf && <span className="text-[10px] text-emerald-600 font-semibold">(Tú)</span>}
                     </td>
-                    <td className="p-3.5 text-gray-600 font-mono text-[11px]">{u.email}</td>
+                    <td className="p-3.5">
+                      <span className="text-gray-900 font-mono text-[11px] font-semibold block">{u.email}</span>
+                      {u.personalEmail && (
+                        <span className="text-[10px] text-gray-400 block mt-0.5">
+                          Personal: <span className="text-emerald-700 font-mono">{u.personalEmail}</span>
+                        </span>
+                      )}
+                    </td>
                     <td className="p-3.5">
                       <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${roleBadge}`}>
                         {u.role}

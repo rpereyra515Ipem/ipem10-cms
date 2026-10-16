@@ -27,6 +27,7 @@ export async function createUserAction(formData: FormData): Promise<void> {
 
   const fullName = (formData.get('fullName') as string)?.trim();
   const email = (formData.get('email') as string)?.toLowerCase().trim();
+  const personalEmail = (formData.get('personalEmail') as string)?.toLowerCase().trim() || null;
   const role = formData.get('role') as 'DIRECTIVO' | 'SECRETARIA' | 'PRECEPTOR' | 'DOCENTE';
   const customPassword = (formData.get('password') as string)?.trim();
 
@@ -56,6 +57,7 @@ export async function createUserAction(formData: FormData): Promise<void> {
     await db.insert(users).values({
       id: newId,
       email,
+      personalEmail,
       fullName,
       passwordHash,
       role,
@@ -117,6 +119,7 @@ export async function getUsersList() {
   return await db.select({
     id: users.id,
     email: users.email,
+    personalEmail: users.personalEmail,
     fullName: users.fullName,
     role: users.role,
     active: users.active,

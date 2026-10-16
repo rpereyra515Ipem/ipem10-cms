@@ -57,9 +57,9 @@ export default async function HomePage() {
             </Link>
 
             <Link
-              href="/login"
+              href="/acceso-institucional"
               className="text-[11px] sm:text-sm font-bold whitespace-nowrap px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-white bg-slate-900 hover:bg-emerald-900 transition flex items-center gap-1 shadow-sm"
-              title="Panel Administrativo"
+              title="Acceso Institucional y Gestión"
             >
               <span>🔒</span>
               <span>Gestión</span>
@@ -71,7 +71,7 @@ export default async function HomePage() {
       {/* Hero Institucional */}
       <section className="relative overflow-hidden bg-gradient-to-b from-emerald-950 via-emerald-900 to-green-950 text-white py-16 px-4 border-b border-emerald-800">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-        
+
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="flex justify-center mb-4">
             <SchoolLogo size="lg" className="drop-shadow-2xl hover:scale-105 transition transform" />
@@ -89,7 +89,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-            {/* Accesos Rápidos Principales (7 Tarjetas en 1 Sola Línea) */}
+      {/* Accesos Rápidos Principales (7 Tarjetas en 1 Sola Línea) */}
       <section className="max-w-6xl mx-auto px-4 -mt-8 mb-12 w-full relative z-20">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
           {/* 1. Preceptoría (PRIMERO) */}
@@ -152,15 +152,15 @@ export default async function HomePage() {
             </div>
           </Link>
 
-          {/* 6. Trámites y Formularios */}
+          {/* 6. Secretaría (Reemplaza a Trámites y CUS) */}
           <Link
-            href="/descargas"
+            href="/secretaria"
             className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-emerald-500 hover:shadow-md transition transform hover:-translate-y-0.5 text-center flex flex-col justify-between"
           >
             <div>
-              <span className="text-2xl block mb-1">📄</span>
-              <h3 className="font-bold text-gray-900 text-xs leading-tight">Trámites y CUS</h3>
-              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Formularios y pases</p>
+              <span className="text-2xl block mb-1">🏢</span>
+              <h3 className="font-bold text-gray-900 text-xs leading-tight">Secretaría</h3>
+              <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">Trámites y CUS</p>
             </div>
           </Link>
 
@@ -185,7 +185,7 @@ export default async function HomePage() {
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">Novedades y Comunicados</h2>
             <p className="text-xs sm:text-sm text-gray-500">Publicaciones oficiales del IPEM 10 Roma</p>
           </div>
-          <Link href="/login" className="text-[11px] sm:text-sm font-bold whitespace-nowrap text-emerald-700 hover:underline flex items-center gap-1">
+          <Link href="/acceso-institucional" className="text-[11px] sm:text-sm font-bold whitespace-nowrap text-emerald-700 hover:underline flex items-center gap-1">
             <span>🔒</span> Acceso Panel de Gestión →
           </Link>
         </div>
@@ -221,10 +221,10 @@ export default async function HomePage() {
                     <span>
                       {post.publishedAt
                         ? new Date(post.publishedAt).toLocaleDateString('es-AR', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })
                         : 'Reciente'}
                     </span>
                     <Link href={`/noticias/${post.slug}`} className="font-bold text-emerald-700 hover:underline">
@@ -261,17 +261,10 @@ export default async function HomePage() {
             <h4 className="text-white font-bold text-base mb-2">Comunidad Escolar</h4>
             <ul className="text-xs text-emerald-300/80 space-y-1.5">
               <li><Link href="/docentes" className="text-amber-300 hover:underline font-semibold">👨‍🏫 Sala de Docentes</Link></li>
+              <li><Link href="/secretaria" className="hover:text-white">🏢 Secretaría y Trámites</Link></li>
               <li><Link href="/tutorias" className="hover:text-white">Clases de Tutorías</Link></li>
               <li><Link href="/biblioteca" className="hover:text-white">Biblioteca Escolar</Link></li>
               <li><Link href="/cooperadora" className="hover:text-white">Asociación Cooperadora</Link></li>
-              <li><Link
-              href="/institucional"
-              className="text-[11px] sm:text-sm font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 transition flex items-center gap-1 shadow-sm whitespace-nowrap"
-              title="Historia, orientación e identidad del colegio"
-            >
-              <span>🏛️</span>
-              <span>Institucional</span>
-            </Link></li>
             </ul>
           </div>
           <div>
@@ -280,14 +273,14 @@ export default async function HomePage() {
               Exclusivo para directivos y secretaría:
             </p>
             <div className="mt-3">
-              <Link href="/login" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1 border border-slate-700 shadow-sm">
+              <Link href="/acceso-institucional" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1 border border-slate-700 shadow-sm">
                 <span>🔒</span> Iniciar Sesión de Gestión →
               </Link>
             </div>
           </div>
         </div>
 
-                {/* Firma del Webmaster y Contacto Comercial */}
+        {/* Firma del Webmaster y Contacto Comercial */}
         <div className="max-w-6xl mx-auto px-4 border-t border-emerald-900/80 mt-10 pt-6 pb-24 sm:pb-8 flex flex-col lg:flex-row items-center justify-between gap-4 text-xs text-emerald-300/80 lg:pr-72">
           <p className="text-center lg:text-left">© {new Date().getFullYear()} IPEM N° 10 Roma. Todos los derechos reservados.</p>
           <div className="flex flex-wrap items-center justify-center gap-2 bg-emerald-900/60 px-4 py-2 rounded-full border border-emerald-700/70 shadow-lg">
