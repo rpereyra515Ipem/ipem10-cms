@@ -225,7 +225,7 @@ export default async function AdminUsuariosPage() {
                       {isCurrentUser ? (
                         <span className="text-gray-400 text-[11px] italic">Protegido</span>
                       ) : (
-                        <form action={toggleUserStatusAction}>
+                        <form action={toggleUserStatusAction.bind(null, user.id, Boolean(user.active))}>
                           <input type="hidden" name="userId" value={user.id} />
                           <input type="hidden" name="currentStatus" value={String(user.active)} />
                           <button
