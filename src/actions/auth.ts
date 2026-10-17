@@ -98,7 +98,7 @@ export async function loginAction(formData: FormData): Promise<{ error?: string 
 export async function changePasswordAction(formData: FormData): Promise<{ error?: string }> {
   const session = await getSession();
   if (!session) {
-    redirect('/login');
+    redirect('/acceso-institucional');
   }
 
   const newPassword = formData.get('newPassword') as string;
@@ -157,5 +157,5 @@ export async function logoutAction(): Promise<void> {
   }
 
   await destroySession();
-  redirect('/login');
+  redirect('/acceso-institucional');
 }

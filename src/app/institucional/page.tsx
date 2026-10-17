@@ -46,7 +46,7 @@ export default function InstitucionalPage() {
               🤝 Cooperadora
             </Link>
             <Link
-              href="/login"
+              href="/acceso-institucional"
               className="text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-lg text-white bg-slate-900 hover:bg-emerald-900 transition flex items-center gap-1 shadow-sm"
             >
               <span>🔒</span>
@@ -365,7 +365,7 @@ export default function InstitucionalPage() {
               Exclusivo para directivos y secretaría:
             </p>
             <div className="mt-3">
-              <Link href="/login" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1 border border-slate-700 shadow-sm">
+              <Link href="/acceso-institucional" className="text-xs bg-slate-900 hover:bg-slate-800 text-amber-300 px-4 py-2.5 rounded-lg font-bold transition inline-flex items-center gap-1 border border-slate-700 shadow-sm">
                 <span>🔒</span> Iniciar Sesión de Gestión →
               </Link>
             </div>

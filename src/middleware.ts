@@ -25,7 +25,7 @@ const rateLimitMap = new Map<string, RateLimitTracker>();
 
 const WINDOW_MS = 60 * 1000; // Ventana de 1 minuto
 const MAX_REQUESTS_GENERAL = 100; // Máximo 100 peticiones/minuto por IP para navegación
-const MAX_REQUESTS_LOGIN = 15;    // Máximo 15 peticiones/minuto por IP en /login (anti-fuerza bruta)
+const MAX_REQUESTS_LOGIN = 15;    // Máximo 15 peticiones/minuto por IP en /acceso-institucional (anti-fuerza bruta)
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
     '127.0.0.1';
 
   // 2. APLICAR RATE LIMITING (Defensa L7 contra saturación)
-  const isLoginRoute = pathname.startsWith('/login');
+  const isLoginRoute = pathname.startsWith('/acceso-institucional');
   const limit = isLoginRoute ? MAX_REQUESTS_LOGIN : MAX_REQUESTS_GENERAL;
   const key = `${ip}:${isLoginRoute ? 'login' : 'general'}`;
   const now = Date.now();
@@ -101,7 +101,7 @@ export async function middleware(request: NextRequest) {
 
     // Si no hay sesión, va directo a login
     if (!token) {
-      const loginUrl = new URL('/login', request.url);
+      const loginUrl = new URL('/acceso-institucional', request.url);
       return NextResponse.redirect(loginUrl);
     }
 
@@ -117,7 +117,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     } catch {
       // Token inválido o manipulado
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/acceso-institucional', request.url));
     }
   }
 

@@ -239,8 +239,8 @@ export default async function HomePage() {
           <div className="space-y-6">
             {/* Noticia Principal Destacada (Con Soporte de Foto Real + Escudo de Respaldo) */}
             {featuredPost && (
-              <article className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 group">
-                <div className="lg:col-span-5 h-56 sm:h-72 lg:h-auto bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-950 relative overflow-hidden flex flex-col items-center justify-center p-6 text-center select-none">
+              <article className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 grid grid-cols-1 md:grid-cols-12 group">
+                <div className="md:col-span-5 h-64 sm:h-72 md:h-80 bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-950 relative overflow-hidden flex flex-col items-center justify-center p-5 text-center select-none">
                   {/* Escudo de respaldo institucional (visible si no hay foto) */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center pointer-events-none">
                     <div className="relative z-10 transform group-hover:scale-105 transition-transform duration-300">
@@ -251,12 +251,12 @@ export default async function HomePage() {
                     </span>
                   </div>
 
-                  {/* Foto real (si existe, se superpone y cubre el fondo) */}
+                  {/* Foto real adaptada al marco (horizontal o vertical sin deformar) */}
                   {featuredPost.imageUrl && (
                     <img
                       src={featuredPost.imageUrl}
                       alt=""
-                      className="w-full h-full object-cover relative z-10 group-hover:scale-105 transition-transform duration-500"
+                      className="max-h-[220px] sm:max-h-[250px] w-auto max-w-full object-contain relative z-10 rounded-xl drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
                     />
                   )}
 
@@ -265,7 +265,7 @@ export default async function HomePage() {
                   </span>
                 </div>
 
-                <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-4">
+                <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
                       <span>🗓️</span>

@@ -40,7 +40,7 @@ export default async function PreceptoriaPage() {
               <span>Docentes</span>
             </Link>
             <Link
-              href="/login"
+              href="/acceso-institucional"
               className="text-xs sm:text-sm font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-white bg-slate-900 hover:bg-emerald-900 transition flex items-center gap-1 shadow-sm whitespace-nowrap"
             >
               <span>🔒</span>
