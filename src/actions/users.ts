@@ -9,7 +9,7 @@ import { randomUUID, randomBytes } from 'crypto';
 import { revalidatePath } from 'next/cache';
 import { eq, desc } from 'drizzle-orm';
 
-const ALLOWED_ADMINS = ['MASTER', 'DIRECTIVO', 'ADMIN'];
+const ALLOWED_ADMINS = ['MASTER', 'DIRECTIVO', 'ADMIN', 'SECRETARIA'];
 
 export async function createUserAction(formData: FormData): Promise<void> {
   const session = await getSession();
@@ -33,8 +33,11 @@ export async function createUserAction(formData: FormData): Promise<void> {
 
   if (!fullName || !email || !role) return;
 
-  // Regla de Ciberseguridad: Un Directivo no puede crear otros Directivos ni Masters
-  if (session.role === 'DIRECTIVO' && (role === ('MASTER' as any) || role === 'DIRECTIVO')) {
+  // Regla de Ciberseguridad: Restricción de escalamiento de privilegios
+  if (
+    (session.role === 'DIRECTIVO' && (role === ('MASTER' as any) || role === 'DIRECTIVO')) ||
+    (session.role === 'SECRETARIA' && ['MASTER', 'DIRECTIVO', 'SECRETARIA'].includes(role))
+  ) {
     await logSecurityEvent({
       severity: 'HIGH',
       action: 'PRIVILEGE_ESCALATION_BLOCKED',
@@ -42,7 +45,7 @@ export async function createUserAction(formData: FormData): Promise<void> {
       status: 'FAILED',
       actorId: session.userId,
       actorRole: session.role,
-      details: { intento: `Directivo intentó crear rol ${role}` },
+      details: { attemptedRole: role },
     });
     return;
   }

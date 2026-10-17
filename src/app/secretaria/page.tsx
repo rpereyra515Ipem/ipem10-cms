@@ -1,50 +1,70 @@
 import Link from 'next/link';
-import { cookies } from 'next/headers';
+import { getSession } from '@/lib/auth';
+import SchoolLogo from '@/components/SchoolLogo';
 import TramitePublicoClient from './TramitePublicoClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SecretariaPage() {
-    const cookieStore = await cookies();
-    const hasSession = cookieStore.has('session') || cookieStore.has('auth_token') || cookieStore.has('token');
+    const session = await getSession();
+    const hasSession = Boolean(session);
+    const canAccessAdmin = session && ['MASTER', 'DIRECTIVO', 'SECRETARIA', 'ADMIN'].includes(session.role);
 
     return (
         <div className="min-h-screen bg-slate-50 text-slate-900">
-            {/* Header Institucional */}
-            <header className="bg-emerald-900 border-b-4 border-amber-500 text-white shadow-lg sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-11 h-11 rounded-full bg-emerald-800 border-2 border-amber-400 flex items-center justify-center font-bold text-amber-300 text-lg shadow-inner">
-                            10
+            {/* Header Institucional Unificado */}
+            <header className="bg-emerald-950 border-b-4 border-amber-500 text-white shadow-md sticky top-0 z-40">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <div className="p-1 bg-emerald-900/80 rounded-xl border border-amber-400/40 group-hover:scale-105 transition transform shadow-xs">
+                            <SchoolLogo size="md" className="drop-shadow-sm" />
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <span className="text-xs uppercase tracking-wider font-semibold text-amber-400">
+                                <span className="text-xs uppercase tracking-wider font-bold text-amber-400">
                                     IPEM N° 10 Roma
                                 </span>
-                                <span className="text-[10px] bg-emerald-800/80 px-2 py-0.5 rounded text-emerald-200 border border-emerald-700">
+                                <span className="text-[10px] bg-emerald-900 px-2 py-0.5 rounded-full text-emerald-200 border border-emerald-800">
                                     CUE: 1404728-00
                                 </span>
                             </div>
-                            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                            <h1 className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2">
                                 <span>🏢</span>
                                 <span>Secretaría Docente y Administrativa</span>
                             </h1>
                         </div>
-                    </div>
+                    </Link>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        {/* Botón Inicio Estandarizado con Icono */}
                         <Link
                             href="/"
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-emerald-100 hover:text-white font-medium text-sm transition-colors border border-emerald-700 shadow-sm"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm transition-all border border-emerald-700/80 shadow-xs"
+                            title="Volver a la portada principal del IPEM 10"
                         >
-                            <span>← Volver al Inicio</span>
+                            <span>🏠</span>
+                            <span>Inicio</span>
                         </Link>
 
-                        <Link
-                            href="/acceso-institucional"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-emerald-950 transition-colors shadow-sm"
-                        >
-                            {hasSession ? 'Mi Cuenta' : 'Acceso Personal'}
-                        </Link>
+                        {/* Botón Dinámico: Panel de Gestión para Secretaría / Directivos o Acceso Personal para visitantes */}
+                        {canAccessAdmin ? (
+                            <Link
+                                href="/admin"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-black bg-amber-400 hover:bg-amber-300 text-emerald-950 transition-all shadow-md transform hover:-translate-y-0.5"
+                                title="Volver al Panel de Gestión Escolar"
+                            >
+                                <span>⚙️</span>
+                                <span>Panel de Gestión</span>
+                            </Link>
+                        ) : (
+                            <Link
+                                href="/acceso-institucional"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-400 hover:bg-amber-300 text-emerald-950 transition-colors shadow-sm"
+                            >
+                                <span>🔒</span>
+                                <span>Acceso Personal</span>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </header>

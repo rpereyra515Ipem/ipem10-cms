@@ -3,17 +3,31 @@ import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUsuariosPage() {
   const session = await getSession();
-  if (!session || !['MASTER', 'DIRECTIVO', 'ADMIN'].includes(session.role)) {
+  if (!session || !['MASTER', 'DIRECTIVO', 'ADMIN', 'SECRETARIA'].includes(session.role)) {
     redirect('/admin');
   }
 
   const userList = await getUsersList();
   const isMaster = session.role === 'MASTER';
+  const isDirectivo = session.role === 'DIRECTIVO';
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Botón de Retorno Prominente y Visible */}
+      <div>
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-black text-xs sm:text-sm rounded-xl border-2 border-emerald-400 shadow-sm hover:shadow transition transform hover:-translate-y-0.5"
+        >
+          <span className="text-base">⬅️</span>
+          <span>Volver al Panel de Gestión</span>
+        </Link>
+      </div>
+
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-4">
         <div>
@@ -31,35 +45,42 @@ export default async function AdminUsuariosPage() {
         </div>
       </div>
 
-      {/* Formulario de Alta de Usuario */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-        <h2 className="text-base font-bold text-gray-900 mb-1 flex items-center gap-2">
-          <span>➕</span> Dar de Alta Nueva Cuenta Escolar
-        </h2>
-        <p className="text-xs text-gray-500 mb-5">
-          Si el docente o preceptor ingresará con <b>Google Workspace</b> (@ipem10.edu.ar), deja la contraseña vacía.
-        </p>
+      {/* Formulario de Alta de Personal */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
+        <div className="border-b border-gray-100 pb-3">
+          <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
+            <span>➕</span> Dar de Alta Nueva Cuenta Escolar
+          </h2>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Si el docente o preceptor ingresará con Google Workspace (@ipem10.edu.ar), deja la contraseña vacía.
+          </p>
+        </div>
 
         <form action={createUserAction} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Nombre Completo *</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Nombre Completo *
+              </label>
               <input
                 name="fullName"
-                placeholder="Ej: Prof. Mariana López"
-                className="w-full text-xs p-2.5 border rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 transition"
+                type="text"
                 required
+                placeholder="Ej: Prof. Mariana López"
+                className="w-full text-xs p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Correo Institucional *</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Correo Institucional *
+              </label>
               <input
-                type="email"
                 name="email"
-                placeholder="mariana.lopez@ipem10.edu.ar"
-                className="w-full text-xs p-2.5 border rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 transition"
+                type="email"
                 required
+                placeholder="mariana.lopez@ipem10.edu.ar"
+                className="w-full text-xs p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none"
               />
             </div>
 
@@ -68,25 +89,30 @@ export default async function AdminUsuariosPage() {
                 Correo Personal <span className="font-normal text-gray-400">(Para avisos)</span>
               </label>
               <input
-                type="email"
                 name="personalEmail"
+                type="email"
                 placeholder="ejemplo@gmail.com"
-                className="w-full text-xs p-2.5 border rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 transition"
+                className="w-full text-xs p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Rol en la Escuela *</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Rol en la Escuela *
+              </label>
               <select
                 name="role"
-                className="w-full text-xs p-2.5 border rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 transition font-semibold"
+                defaultValue="DOCENTE"
+                className="w-full text-xs p-2.5 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none font-medium"
                 required
               >
                 <option value="DOCENTE">👨‍🏫 DOCENTE (Sala de Profesores)</option>
-                <option value="PRECEPTOR">🧑‍🏫 PRECEPTOR (Cursos y Horas Libres)</option>
-                <option value="SECRETARIA">📑 SECRETARIA (Trámites y Exámenes)</option>
+                <option value="PRECEPTOR">🧑‍🏫 PRECEPTOR (Preceptoría)</option>
+                {(isMaster || isDirectivo) && (
+                  <option value="SECRETARIA">🏢 SECRETARIA (Secretaría y Despacho)</option>
+                )}
                 {isMaster && (
-                  <option value="DIRECTIVO">🏛️ DIRECTIVO (Gestión Escolar Total)</option>
+                  <option value="DIRECTIVO">🏛️ DIRECTIVO (Equipo Directivo)</option>
                 )}
               </select>
             </div>
@@ -96,10 +122,10 @@ export default async function AdminUsuariosPage() {
                 Contraseña local <span className="font-normal text-gray-400">(Opcional)</span>
               </label>
               <input
-                type="text"
                 name="password"
+                type="password"
                 placeholder="Dejar vacía para Google SSO"
-                className="w-full text-xs p-2.5 border rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-emerald-500 transition"
+                className="w-full text-xs p-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none"
               />
             </div>
           </div>
@@ -107,92 +133,110 @@ export default async function AdminUsuariosPage() {
           <div className="flex justify-end pt-2">
             <button
               type="submit"
-              className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow transition"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5"
             >
-              💾 Guardar y Habilitar Acceso
+              <span>💾</span>
+              <span>Guardar y Habilitar Acceso</span>
             </button>
           </div>
         </form>
       </div>
 
-      {/* Tabla de Cuentas Existentes */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-          <h3 className="font-bold text-gray-900 text-sm">Personal Escolar con Acceso Habilitado</h3>
+      {/* Tabla de Usuarios Registrados */}
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div className="p-5 border-b border-gray-200">
+          <h2 className="text-base font-bold text-gray-900">
+            Personal Escolar con Acceso Habilitado
+          </h2>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-gray-700">
-            <thead className="bg-slate-50 text-gray-600 font-bold uppercase tracking-wider text-[10px] border-b">
+          <table className="min-w-full divide-y divide-gray-200 text-left text-xs">
+            <thead className="bg-slate-50 text-gray-500 uppercase tracking-wider font-extrabold text-[10px]">
               <tr>
-                <th className="p-3.5">Usuario / Personal</th>
-                <th className="p-3.5">Correo Electrónico</th>
-                <th className="p-3.5">Rol Asignado</th>
-                <th className="p-3.5">Estado</th>
-                <th className="p-3.5 text-right">Acción</th>
+                <th className="px-6 py-3.5">Usuario / Personal</th>
+                <th className="px-6 py-3.5">Correo Electrónico</th>
+                <th className="px-6 py-3.5">Rol Asignado</th>
+                <th className="px-6 py-3.5">Estado</th>
+                <th className="px-6 py-3.5 text-right">Acción</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {userList.map((u) => {
-                const isSelf = u.id === session.userId;
-                const roleBadge =
-                  u.role === 'MASTER' ? 'bg-purple-100 text-purple-900 border-purple-300' :
-                  u.role === 'DIRECTIVO' ? 'bg-blue-100 text-blue-900 border-blue-300' :
-                  u.role === 'PRECEPTOR' ? 'bg-rose-100 text-rose-900 border-rose-300' :
-                  u.role === 'SECRETARIA' ? 'bg-amber-100 text-amber-900 border-amber-300' :
-                  'bg-emerald-100 text-emerald-900 border-emerald-300';
-
+              {userList.map((user) => {
+                const isCurrentUser = session.userId === user.id || session.email === user.email;
                 return (
-                  <tr key={u.id} className="hover:bg-slate-50/80 transition">
-                    <td className="p-3.5 font-bold text-gray-900 flex items-center gap-2">
-                      <span className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-[10px] font-black">
-                        {u.fullName.charAt(0).toUpperCase()}
+                  <tr key={user.id} className="hover:bg-slate-50 transition">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-black text-slate-700 uppercase">
+                          {user.fullName.charAt(0)}
+                        </div>
+                        <div>
+                          <span className="font-bold text-gray-900 text-sm block">
+                            {user.fullName} {isCurrentUser && <span className="text-emerald-700 font-bold text-xs">(Tú)</span>}
+                          </span>
+                          {user.personalEmail && (
+                            <span className="text-gray-400 text-[11px] block">
+                              Personal: {user.personalEmail}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap font-mono text-gray-700">
+                      {user.email}
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] uppercase ${
+                          user.role === 'MASTER'
+                            ? 'bg-purple-100 text-purple-800'
+                            : user.role === 'DIRECTIVO'
+                            ? 'bg-amber-100 text-amber-800'
+                            : user.role === 'SECRETARIA'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : user.role === 'PRECEPTOR'
+                            ? 'bg-rose-100 text-rose-800'
+                            : 'bg-emerald-100 text-emerald-800'
+                        }`}
+                      >
+                        {user.role}
                       </span>
-                      {u.fullName} {isSelf && <span className="text-[10px] text-emerald-600 font-semibold">(Tú)</span>}
                     </td>
-                    <td className="p-3.5">
-                      <span className="text-gray-900 font-mono text-[11px] font-semibold block">{u.email}</span>
-                      {u.personalEmail && (
-                        <span className="text-[10px] text-gray-400 block mt-0.5">
-                          Personal: <span className="text-emerald-700 font-mono">{u.personalEmail}</span>
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3.5">
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${roleBadge}`}>
-                        {u.role}
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex items-center gap-1.5 font-bold ${
+                          user.active ? 'text-emerald-700' : 'text-rose-600'
+                        }`}
+                      >
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            user.active ? 'bg-emerald-500' : 'bg-rose-500'
+                          }`}
+                        />
+                        {user.active ? 'Activo' : 'Suspendido'}
                       </span>
                     </td>
-                    <td className="p-3.5">
-                      {u.active ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700">
-                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Activo
-                        </span>
+
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      {isCurrentUser ? (
+                        <span className="text-gray-400 text-[11px] italic">Protegido</span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-gray-400">
-                          <span className="w-2 h-2 rounded-full bg-gray-400"></span> Suspendido
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3.5 text-right">
-                      {!isSelf && (isMaster || (session.role === 'DIRECTIVO' && u.role !== 'MASTER' && u.role !== 'DIRECTIVO')) ? (
-                        <form action={async () => {
-                          'use server';
-                          await toggleUserStatusAction(u.id, !!u.active);
-                        }}>
+                        <form action={toggleUserStatusAction}>
+                          <input type="hidden" name="userId" value={user.id} />
+                          <input type="hidden" name="currentStatus" value={String(user.active)} />
                           <button
                             type="submit"
-                            className={`text-[11px] font-bold px-3 py-1 rounded-lg border transition ${
-                              u.active
-                                ? 'text-rose-700 border-rose-200 hover:bg-rose-50'
-                                : 'text-emerald-700 border-emerald-200 hover:bg-emerald-50'
+                            className={`font-bold hover:underline ${
+                              user.active ? 'text-rose-600' : 'text-emerald-600'
                             }`}
                           >
-                            {u.active ? '🚫 Suspender' : '✅ Reactivar'}
+                            {user.active ? 'Suspender' : 'Activar'}
                           </button>
                         </form>
-                      ) : (
-                        <span className="text-gray-400 text-[10px] italic">Protegido</span>
                       )}
                     </td>
                   </tr>

@@ -249,6 +249,7 @@ export default async function AdminDashboardPage() {
 
         {/* Tarjetas de acceso a módulos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Tarjeta de Secretaría, Personal y Gestión de MAB */}
           <div className="bg-white rounded-2xl border-2 border-emerald-500/50 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -259,27 +260,59 @@ export default async function AdminDashboardPage() {
               </div>
               <h3 className="font-bold text-gray-900 text-base">Secretaría y Planta Docente</h3>
               <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
-                Novedades de personal, altas individuales y carga masiva mediante archivo CSV o Google Sheets.
+                Novedades de personal, altas individuales, carga masiva y enlace oficial a CiDi para trámites de MAB provincial.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
-              <Link
-                href="/secretaria/carga-masiva"
-                className="text-xs font-bold px-3 py-2 bg-amber-500 hover:bg-amber-400 text-emerald-950 rounded-lg shadow-sm"
-              >
-                📥 Carga Masiva
-              </Link>
+
+            <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">
+              {/* 1. Alta Individual de Docente */}
               <Link
                 href="/admin/usuarios"
-                className="text-xs font-bold px-3 py-2 border rounded-lg hover:bg-gray-50 text-gray-700"
+                className="text-xs font-bold px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg shadow-sm transition inline-flex items-center gap-1"
+                title="Cargar un nuevo docente individualmente"
               >
-                👥 Ver Nómina
+                <span>➕</span>
+                <span>Alta Docente</span>
               </Link>
+
+              {/* 2. Carga Masiva (CSV / Google Sheets) */}
+              <Link
+                href="/secretaria/carga-masiva"
+                className="text-xs font-bold px-3 py-2 bg-amber-500 hover:bg-amber-400 text-emerald-950 rounded-lg shadow-sm transition inline-flex items-center gap-1"
+                title="Importación masiva mediante CSV o Google Sheets"
+              >
+                <span>📥</span>
+                <span>Carga Masiva</span>
+              </Link>
+
+              {/* 3. Ver Nómina Completa */}
+              <Link
+                href="/admin/usuarios"
+                className="text-xs font-bold px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg border border-slate-300 transition inline-flex items-center gap-1"
+                title="Ver nómina de personal y roles"
+              >
+                <span>👥</span>
+                <span>Nómina</span>
+              </Link>
+
+              {/* 4. Enlace Directo a Ciudadano Digital (CiDi) para MAB */}
+              <a
+                href="https://cidi.cba.gov.ar"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold px-3 py-2 bg-sky-700 hover:bg-sky-800 text-white rounded-lg shadow-sm transition inline-flex items-center gap-1"
+                title="Acceso directo a CiDi (Gobierno de Córdoba) para confección de MAB y Recursos Humanos"
+              >
+                <span>🏛️</span>
+                <span>CiDi (MAB) ↗</span>
+              </a>
+
+              {/* 5. Acceso al Portal Público de Secretaría */}
               <Link
                 href="/secretaria"
-                className="text-xs font-bold px-3 py-2 text-emerald-700 hover:underline"
+                className="text-xs font-bold text-emerald-700 hover:text-emerald-900 transition ml-auto inline-flex items-center gap-0.5"
               >
-                Ver Portal →
+                <span>Ver Portal →</span>
               </Link>
             </div>
           </div>

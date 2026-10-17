@@ -11,9 +11,9 @@ export default function AdminLayout({
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Barra de Navegación del Panel de Control */}
       <header className="bg-emerald-950 text-white border-b border-emerald-900 sticky top-0 z-50 shadow-md">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/admin" className="flex items-center gap-2.5 group">
+            <Link href="/admin" className="flex items-center gap-2.5 group" title="Ir al Panel de Control Principal">
               <SchoolLogo size="sm" className="w-8 h-8" />
               <div>
                 <span className="font-extrabold text-sm block leading-tight text-white group-hover:text-amber-300 transition">
@@ -25,8 +25,20 @@ export default function AdminLayout({
               </div>
             </Link>
 
-            {/* Menú de Módulos */}
+            {/* Menú de Módulos Permanente */}
             <nav className="hidden md:flex items-center gap-1 text-xs">
+              <Link
+                href="/admin/secretaria/tramites"
+                className="px-3 py-1.5 rounded-md hover:bg-emerald-900 text-emerald-100 font-medium transition"
+              >
+                🏢 Secretaría
+              </Link>
+              <Link
+                href="/admin/usuarios"
+                className="px-3 py-1.5 rounded-md hover:bg-emerald-900 text-emerald-100 font-medium transition"
+              >
+                👥 Personal
+              </Link>
               <Link
                 href="/admin/publicaciones"
                 className="px-3 py-1.5 rounded-md hover:bg-emerald-900 text-emerald-100 font-medium transition"
