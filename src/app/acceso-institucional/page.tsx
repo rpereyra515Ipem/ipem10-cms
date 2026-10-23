@@ -46,17 +46,19 @@ function AccesoInstitucionalForm() {
 
       {/* Encabezado Institucional con Escudo */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10 mb-5">
-        <div className="flex justify-center mb-2">
-          <div className="p-2 bg-emerald-900/60 rounded-2xl border border-emerald-400/30 shadow-2xl backdrop-blur-sm">
-            <SchoolLogo size="md" className="drop-shadow-2xl" />
+        <Link href="/" className="inline-block group" title="Volver a la portada principal del IPEM 10">
+          <div className="flex justify-center mb-2">
+            <div className="p-2 bg-emerald-900/60 rounded-2xl border border-emerald-400/30 shadow-2xl backdrop-blur-sm group-hover:scale-105 transition transform">
+              <SchoolLogo size="md" className="drop-shadow-2xl" />
+            </div>
           </div>
-        </div>
-        <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider">
-          Educación Secundaria Pública • Córdoba
-        </span>
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1.5">
-          IPEM N° 10 Roma
-        </h1>
+          <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider">
+            Educación Secundaria Pública • Córdoba
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1.5 group-hover:text-amber-300 transition-colors">
+            IPEM N° 10 Roma
+          </h1>
+        </Link>
         <p className="text-xs text-emerald-200/80 font-medium">
           Portal Oficial de Acceso Institucional y Gestión
         </p>

@@ -132,6 +132,31 @@ async function runSetup() {
       user_agent TEXT,
       details TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS student_notices (
+      id TEXT PRIMARY KEY,
+      token TEXT NOT NULL UNIQUE,
+      code TEXT NOT NULL UNIQUE,
+      student_name TEXT NOT NULL,
+      student_dni TEXT NOT NULL,
+      year_level TEXT NOT NULL,
+      division TEXT NOT NULL,
+      shift TEXT NOT NULL,
+      parent_name TEXT,
+      parent_phone TEXT,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      meeting_date TEXT,
+      meeting_time TEXT,
+      meeting_place TEXT,
+      status TEXT NOT NULL DEFAULT 'ENVIADO',
+      acknowledged_at TEXT,
+      parent_note TEXT,
+      author_id TEXT NOT NULL,
+      author_name TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
   `;
 
   // Ejecución directa de creación de tablas

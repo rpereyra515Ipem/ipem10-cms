@@ -124,3 +124,30 @@ export const tramites = sqliteTable('tramites', {
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
+// ============================================================================
+// CÉDULAS DE NOTIFICACIÓN Y CITACIONES INDIVIDUALES A FAMILIAS
+// ============================================================================
+export const studentNotices = sqliteTable('student_notices', {
+  id: text('id').primaryKey(),
+  token: text('token').notNull().unique(),
+  code: text('code').notNull().unique(), // Ej: CIT-2026-0042
+  studentName: text('student_name').notNull(),
+  studentDni: text('student_dni').notNull(),
+  yearLevel: text('year_level').notNull(), // 1° Año, 2° Año, ..., 6° Año
+  division: text('division').notNull(), // A, B, C, D
+  shift: text('shift').notNull(), // MAÑANA (Informática) | TARDE (Robótica)
+  parentName: text('parent_name'),
+  parentPhone: text('parent_phone'),
+  type: text('type').notNull(), // CITACION_PRESENCIAL, ALERTA_INASISTENCIAS, INFORME_PEDAGOGICO, DOCUMENTACION_PENDIENTE, COMUNICADO_INDIVIDUAL
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  meetingDate: text('meeting_date'), // YYYY-MM-DD
+  meetingTime: text('meeting_time'), // HH:MM
+  meetingPlace: text('meeting_place'), // Ej: Preceptoría PB
+  status: text('status').notNull().default('ENVIADO'), // ENVIADO | LEIDO | CONFORMADO
+  acknowledgedAt: text('acknowledged_at'),
+  parentNote: text('parent_note'),
+  authorId: text('author_id').notNull(),
+  authorName: text('author_name').notNull(),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+});

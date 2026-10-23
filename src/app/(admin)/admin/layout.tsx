@@ -13,7 +13,7 @@ export default function AdminLayout({
       <header className="bg-emerald-950 text-white border-b border-emerald-900 sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/admin" className="flex items-center gap-2.5 group" title="Ir al Panel de Control Principal">
+            <Link href="/" className="flex items-center gap-2.5 group" title="Volver a la portada principal del IPEM 10">
               <SchoolLogo size="sm" className="w-8 h-8" />
               <div>
                 <span className="font-extrabold text-sm block leading-tight text-white group-hover:text-amber-300 transition">
@@ -27,6 +27,12 @@ export default function AdminLayout({
 
             {/* Menú de Módulos Permanente */}
             <nav className="hidden md:flex items-center gap-1 text-xs">
+              <Link
+                href="/preceptoria"
+                className="px-3 py-1.5 rounded-md hover:bg-emerald-900 text-emerald-100 font-bold transition flex items-center gap-1"
+              >
+                <span>🧑‍🏫</span> Preceptoría
+              </Link>
               <Link
                 href="/admin/secretaria/tramites"
                 className="px-3 py-1.5 rounded-md hover:bg-emerald-900 text-emerald-100 font-medium transition"

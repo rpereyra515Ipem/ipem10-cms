@@ -1,17 +1,25 @@
 import { getPreceptoriaNotices, createPreceptoriaNoticeAction, deletePreceptoriaNoticeAction } from '@/actions/preceptoria';
+import { getStudentNoticesList } from '@/actions/student-notices';
 import { getSession } from '@/lib/auth';
+import { logoutAction } from '@/actions/auth';
 import Link from 'next/link';
 import SchoolLogo from '@/components/SchoolLogo';
+import CitacionesManagerClient from './CitacionesManagerClient';
+import SessionTimeout from '@/components/SessionTimeout';
 
 export const dynamic = 'force-dynamic';
 
 export default async function PreceptoriaPage() {
   const session = await getSession();
   const notices = await getPreceptoriaNotices();
+  const studentNotices = await getStudentNoticesList();
   const canPublish = session && ['MASTER', 'DIRECTIVO', 'ADMIN', 'PRECEPTOR'].includes(session.role);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col justify-between">
+      {/* Temporizador de Cierre de Sesión Automático por Inactividad (15 min) */}
+      {session && <SessionTimeout timeoutMinutes={15} />}
+
       {/* Barra de Navegación Superior Institucional */}
       <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -49,13 +57,48 @@ export default async function PreceptoriaPage() {
               <span>👨‍🏫</span>
               <span>Docentes</span>
             </Link>
-            <Link
-              href="/acceso-institucional"
-              className="text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl text-white bg-slate-900 hover:bg-emerald-950 transition inline-flex items-center gap-1.5 shadow-sm"
-            >
-              <span>🔒</span>
-              <span>Gestión</span>
-            </Link>
+
+            {session ? (
+              <>
+                <Link
+                  href="/admin"
+                  className="text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl text-white bg-emerald-950 hover:bg-slate-900 transition inline-flex items-center gap-1.5 shadow-xs"
+                  title="Ir al Panel de Gestión"
+                >
+                  <span>⚙️</span>
+                  <span>Gestión</span>
+                </Link>
+
+                {/* Identificación del Personal */}
+                <div className="hidden md:flex items-center gap-1.5 bg-emerald-50 border border-emerald-300 text-emerald-950 px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs">
+                  <span>👤</span>
+                  <span className="max-w-[140px] truncate">{session.fullName}</span>
+                  <span className="text-[10px] bg-emerald-800 text-white px-2 py-0.5 rounded-full uppercase ml-1">
+                    {session.role}
+                  </span>
+                </div>
+
+                {/* Botón Salir */}
+                <form action={logoutAction}>
+                  <button
+                    type="submit"
+                    className="text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-300 shadow-xs transition inline-flex items-center gap-1 whitespace-nowrap"
+                    title="Cerrar la sesión de forma segura"
+                  >
+                    <span>🚪</span>
+                    <span>Salir</span>
+                  </button>
+                </form>
+              </>
+            ) : (
+              <Link
+                href="/acceso-institucional"
+                className="text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl text-white bg-slate-900 hover:bg-emerald-950 transition inline-flex items-center gap-1.5 shadow-sm"
+              >
+                <span>🔒</span>
+                <span>Ingresar</span>
+              </Link>
+            )}
           </nav>
         </div>
       </header>
@@ -75,15 +118,14 @@ export default async function PreceptoriaPage() {
           </h1>
 
           <p className="text-emerald-100/90 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed font-normal">
-            Avisos de horas libres, modificaciones de horario de ingreso y egreso, citaciones a familias y circulares operativas por curso en tiempo real.
+            Cédulas de citación individual con firma digital, control de horas libres y circulares operativas en tiempo real.
           </p>
         </div>
       </section>
 
-      {/* Franja de Información Operativa de Turnos Escolares y Orientaciones */}
+      {/* Franja de Información Operativa de Turnos y Orientaciones */}
       <div className="max-w-5xl mx-auto px-4 -mt-6 relative z-20 w-full">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* Turno Mañana: Bachiller en Informática */}
           <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex items-center gap-3">
             <span className="p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-2xl shrink-0">💻</span>
             <div className="text-xs">
@@ -93,7 +135,6 @@ export default async function PreceptoriaPage() {
             </div>
           </div>
 
-          {/* Turno Tarde: Bachiller en Programación y Robótica */}
           <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex items-center gap-3">
             <span className="p-2.5 bg-amber-50 text-amber-800 rounded-xl text-2xl shrink-0">🤖</span>
             <div className="text-xs">
@@ -103,9 +144,8 @@ export default async function PreceptoriaPage() {
             </div>
           </div>
 
-          {/* Contacto y Justificaciones con Teléfono Oficial */}
           <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex items-center gap-3">
-            <span className="p-2.5 bg-teal-50 text-teal-800 rounded-xl text-2xl shrink-0">📞</span>
+            <span className="p-2.5 bg-teal-50 text-teal-800 rounded-xl text-xl shrink-0">📞</span>
             <div className="text-xs">
               <span className="font-bold text-slate-900 block">Preceptoría y Guardia</span>
               <span className="text-teal-900 font-bold block">(0351) 4347871</span>
@@ -115,43 +155,41 @@ export default async function PreceptoriaPage() {
         </div>
       </div>
 
-      <main className="max-w-5xl mx-auto px-4 py-10 w-full flex-1">
-        {/* Panel Exclusivo para Preceptores y Directivos */}
+      <main className="max-w-5xl mx-auto px-4 py-10 w-full flex-1 space-y-12">
+        {/* 1. GESTOR EXCLUSIVO DE CITACIONES INDIVIDUALES POR ALUMNO CON WHATSAPP Y EMAIL */}
         {canPublish && (
-          <div className="bg-white border-2 border-emerald-600/30 rounded-3xl p-6 sm:p-8 shadow-lg mb-10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4 mb-6">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full">
-                  Panel de Gestión Activo
-                </span>
-                <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 mt-1">
-                  <span>📝</span> Publicar Novedad de Preceptoría
-                </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Sesión activa: <b className="text-slate-700">{session.fullName}</b> ({session.role})
-                </p>
-              </div>
+          <CitacionesManagerClient
+            initialNotices={studentNotices}
+            authorName={session.fullName || 'Preceptoría Escolar'}
+          />
+        )}
 
-              <span className="text-xs bg-emerald-700 text-white font-bold px-3 py-1 rounded-xl shadow-xs self-start sm:self-auto">
-                Modo Edición Habilitado
+        {/* 2. Formulario para Avisos Generales del Curso (Horas Libres grupales) */}
+        {canPublish && (
+          <div className="bg-white border-2 border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+            <div className="border-b border-slate-200 pb-3 mb-5">
+              <span className="text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full">
+                Comunicación Grupal de Todo el Curso
               </span>
+              <h3 className="text-lg font-black text-slate-900 mt-1 flex items-center gap-2">
+                <span>📢</span> Publicar Horas Libres o Retiros del Curso Completo
+              </h3>
             </div>
 
             <form action={createPreceptoriaNoticeAction} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Tipo de Aviso</label>
-                  <select name="type" className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none transition font-medium" required>
+                  <select name="type" className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white font-medium" required>
                     <option value="HORA_LIBRE">🚨 Hora Libre / Retiro</option>
                     <option value="CAMBIO_HORARIO">⏰ Cambio de Horario</option>
-                    <option value="CITACION_FAMILIA">✉️ Citación a Familias</option>
                     <option value="COMUNICADO_CURSO">📢 Comunicado de Curso</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Año / Curso</label>
-                  <select name="yearLevel" className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none transition font-medium" required>
+                  <select name="yearLevel" className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white font-medium" required>
                     <option value="TODOS">Todos los cursos</option>
                     <option value="1° Año">1° Año</option>
                     <option value="2° Año">2° Año</option>
@@ -164,7 +202,7 @@ export default async function PreceptoriaPage() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-700 mb-1">División</label>
-                  <select name="division" className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none transition font-medium" required>
+                  <select name="division" className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white font-medium" required>
                     <option value="TODAS">Todas las divisiones</option>
                     <option value="A">División A</option>
                     <option value="B">División B</option>
@@ -175,9 +213,9 @@ export default async function PreceptoriaPage() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Turno</label>
-                  <select name="shift" className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none transition font-medium" required>
-                    <option value="MAÑANA">Turno Mañana</option>
-                    <option value="TARDE">Turno Tarde</option>
+                  <select name="shift" className="w-full text-xs p-2.5 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white font-medium" required>
+                    <option value="MAÑANA">💻 Turno Mañana: Bachiller en Informática</option>
+                    <option value="TARDE">🤖 Turno Tarde: Bachiller en Programación y Robótica</option>
                     <option value="AMBOS">Ambos Turnos</option>
                   </select>
                 </div>
@@ -189,7 +227,7 @@ export default async function PreceptoriaPage() {
                   <input
                     name="title"
                     placeholder="Ej: 3° B ingresa a las 08:50 hs por ausencia justificada"
-                    className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none transition font-medium"
+                    className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none font-medium"
                     required
                   />
                 </div>
@@ -199,7 +237,7 @@ export default async function PreceptoriaPage() {
                     type="date"
                     name="effectiveDate"
                     defaultValue={new Date().toISOString().split('T')[0]}
-                    className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none transition font-medium"
+                    className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none font-medium"
                     required
                   />
                 </div>
@@ -209,9 +247,9 @@ export default async function PreceptoriaPage() {
                 <label className="block text-xs font-bold uppercase text-slate-700 mb-1">Detalle del Comunicado</label>
                 <textarea
                   name="content"
-                  rows={3}
-                  placeholder="Escriba las aclaraciones pertinentes para estudiantes y familias..."
-                  className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none transition font-normal"
+                  rows={2}
+                  placeholder="Escriba las aclaraciones para todo el curso..."
+                  className="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:outline-none font-normal"
                   required
                 />
               </div>
@@ -219,23 +257,23 @@ export default async function PreceptoriaPage() {
               <div className="flex justify-end pt-2">
                 <button
                   type="submit"
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5"
+                  className="bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow transition"
                 >
-                  🚀 Publicar Novedad de Preceptoría
+                  Publicar Aviso General
                 </button>
               </div>
             </form>
           </div>
         )}
 
-        {/* Listado de Novedades de Preceptoría */}
+        {/* Tablero Público de Horas Libres y Novedades del Curso */}
         <div>
           <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
             <div>
               <h3 className="font-black text-slate-900 text-lg sm:text-xl flex items-center gap-2">
-                <span>📋</span> Tablero de Novedades y Avisos Vigentes
+                <span>📋</span> Tablero Público de Horas Libres y Cursos
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">Información actualizada para familias y alumnos</p>
+              <p className="text-xs text-slate-500 mt-0.5">Información operativa de acceso abierto</p>
             </div>
             <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
               {notices.length} avisos activos
@@ -243,7 +281,6 @@ export default async function PreceptoriaPage() {
           </div>
 
           {notices.length === 0 ? (
-            /* Estado Vacío Heráldico Institucional */
             <div className="bg-white border border-slate-200 rounded-3xl p-10 text-center shadow-xs">
               <div className="flex justify-center mb-3">
                 <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200/80 shadow-xs">
@@ -251,10 +288,10 @@ export default async function PreceptoriaPage() {
                 </div>
               </div>
               <h4 className="font-black text-slate-900 text-base sm:text-lg">
-                Sin horas libres ni novedades operativas registradas
+                Sin horas libres registradas
               </h4>
               <p className="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-md mx-auto leading-relaxed">
-                El cronograma de actividades de ambos turnos (Mañana: Bachiller en Informática / Tarde: Bachiller en Programación y Robótica) se desarrolla con total normalidad.
+                El cronograma de actividades de ambos turnos (Mañana: Bachiller en Informática / Tarde: Bachiller en Programación y Robótica) se desarrolla con normalidad.
               </p>
               <div className="mt-5 inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3.5 py-1.5 rounded-full text-xs font-bold text-emerald-900">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -265,32 +302,29 @@ export default async function PreceptoriaPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {notices.map((n) => {
                 const isHoraLibre = n.type === 'HORA_LIBRE';
-                const isCitacion = n.type === 'CITACION_FAMILIA';
                 const isCambio = n.type === 'CAMBIO_HORARIO';
 
                 return (
                   <div
                     key={n.id}
-                    className={`bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between ${isHoraLibre
-                      ? 'border-l-4 border-l-rose-500'
-                      : isCitacion
-                        ? 'border-l-4 border-l-purple-500'
+                    className={`bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between ${
+                      isHoraLibre
+                        ? 'border-l-4 border-l-rose-500'
                         : isCambio
-                          ? 'border-l-4 border-l-amber-500'
-                          : 'border-l-4 border-l-emerald-500'
-                      }`}
+                        ? 'border-l-4 border-l-amber-500'
+                        : 'border-l-4 border-l-emerald-500'
+                    }`}
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-2.5">
                         <span
-                          className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${isHoraLibre
-                            ? 'bg-rose-100 text-rose-800'
-                            : isCitacion
-                              ? 'bg-purple-100 text-purple-800'
+                          className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                            isHoraLibre
+                              ? 'bg-rose-100 text-rose-800'
                               : isCambio
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-emerald-100 text-emerald-800'
-                            }`}
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-emerald-100 text-emerald-800'
+                          }`}
                         >
                           {n.type.replace('_', ' ')}
                         </span>
