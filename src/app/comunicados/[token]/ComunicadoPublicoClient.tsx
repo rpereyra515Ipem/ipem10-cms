@@ -29,7 +29,13 @@ interface Notice {
   createdAt: string | null;
 }
 
-export default function ComunicadoPublicoClient({ notice }: { notice: Notice }) {
+export default function ComunicadoPublicoClient({
+  notice,
+  isStaff = false,
+}: {
+  notice: Notice;
+  isStaff?: boolean;
+}) {
   const [dniInput, setDniInput] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,6 +77,21 @@ export default function ComunicadoPublicoClient({ notice }: { notice: Notice }) 
   if (!isUnlocked) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-emerald-950 via-slate-950 to-green-950 flex flex-col items-center justify-center p-4">
+        {isStaff && (
+          <div className="max-w-md w-full mb-4 flex items-center justify-between bg-emerald-900/90 text-white px-4 py-2.5 rounded-2xl shadow-lg border border-emerald-700">
+            <span className="text-xs font-bold text-emerald-200 flex items-center gap-1.5">
+              <span>🧑‍🏫</span> Sesión de Preceptoría Activa
+            </span>
+            <Link
+              href="/preceptoria"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-black text-xs rounded-xl shadow-xs transition"
+            >
+              <span>⬅️</span>
+              <span>Volver a Preceptoría</span>
+            </Link>
+          </div>
+        )}
+
         <div className="max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-emerald-900/30 text-center space-y-5">
           <div className="flex justify-center">
             <Link href="/" title="Volver a la portada principal del IPEM 10" className="p-2 bg-emerald-900/10 rounded-2xl border border-emerald-900/20 hover:scale-105 transition transform">
@@ -143,8 +164,25 @@ export default function ComunicadoPublicoClient({ notice }: { notice: Notice }) 
 
   return (
     <div className="min-h-screen bg-slate-100 py-6 px-3 sm:px-6">
+      {/* Barra superior exclusiva para el Preceptor / Directivo logueado (se oculta al imprimir) */}
+      {isStaff && (
+        <div className="max-w-2xl mx-auto mb-4 flex items-center justify-between bg-emerald-950 text-white px-5 py-3 rounded-2xl shadow-md border border-emerald-800 print:hidden">
+          <span className="text-xs font-bold text-emerald-200 flex items-center gap-2">
+            <span>🧑‍🏫</span>
+            <span>Sesión de Preceptoría Activa</span>
+          </span>
+          <Link
+            href="/preceptoria"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-black text-xs rounded-xl shadow-sm transition transform hover:-translate-y-0.5"
+          >
+            <span>⬅️</span>
+            <span>Volver a Preceptoría</span>
+          </Link>
+        </div>
+      )}
+
       <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden print:shadow-none print:border-none">
-        {/* Cabecera Oficial Membretada con Logo Clickeable hacia Inicio */}
+        {/* Cabecera Oficial Membretada */}
         <div className="bg-emerald-950 text-white p-6 sm:p-8 border-b-4 border-amber-500">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-3 group" title="Volver a la portada principal del IPEM 10">

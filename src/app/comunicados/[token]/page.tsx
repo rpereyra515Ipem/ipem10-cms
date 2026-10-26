@@ -1,4 +1,5 @@
 import { getStudentNoticeByToken } from '@/actions/student-notices';
+import { getSession } from '@/lib/auth';
 import ComunicadoPublicoClient from './ComunicadoPublicoClient';
 import Link from 'next/link';
 import SchoolLogo from '@/components/SchoolLogo';
@@ -13,7 +14,14 @@ interface Props {
 
 export default async function ComunicadoPage({ params }: Props) {
   const { token } = params;
-  const notice = await getStudentNoticeByToken(token);
+  const [notice, session] = await Promise.all([
+    getStudentNoticeByToken(token),
+    getSession(),
+  ]);
+
+  const isStaff = Boolean(
+    session && ['MASTER', 'DIRECTIVO', 'ADMIN', 'PRECEPTOR', 'SECRETARIA'].includes(session.role)
+  );
 
   if (!notice) {
     return (
@@ -26,10 +34,15 @@ export default async function ComunicadoPage({ params }: Props) {
           <p className="text-xs text-slate-500 leading-relaxed">
             El enlace ingresado no existe, fue dado de baja o el código de verificación es inválido.
           </p>
-          <p className="text-xs font-bold text-emerald-800">
-            Teléfono del colegio: (0351) 4347871
-          </p>
-          <div className="pt-2">
+          <div className="pt-2 flex flex-col gap-2">
+            {isStaff && (
+              <Link
+                href="/preceptoria"
+                className="inline-block px-4 py-2 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-black text-xs rounded-xl transition"
+              >
+                ⬅️ Volver a Preceptoría
+              </Link>
+            )}
             <Link
               href="/"
               className="inline-block px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition"
@@ -42,5 +55,5 @@ export default async function ComunicadoPage({ params }: Props) {
     );
   }
 
-  return <ComunicadoPublicoClient notice={notice} />;
+  return <ComunicadoPublicoClient notice={notice} isStaff={isStaff} />;
 }
