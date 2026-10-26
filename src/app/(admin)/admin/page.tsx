@@ -19,26 +19,20 @@ export default async function AdminDashboardPage() {
   const isMaster = session.role === 'MASTER';
   const isSecretaria = session.role === 'SECRETARIA';
   const isPreceptor = session.role === 'PRECEPTOR';
-  const isDirectivo = session.role === 'DIRECTIVO';
   const isMaintenance = process.env.MAINTENANCE_MODE === 'true';
 
-  // Métricas escolares
   const [postsCount] = await db.select({ count: sql<number>`count(*)` }).from(posts);
   const [examsCount] = await db.select({ count: sql<number>`count(*)` }).from(exams);
   const [documentsCount] = await db.select({ count: sql<number>`count(*)` }).from(documents);
   const [memosCount] = await db.select({ count: sql<number>`count(*)` }).from(memos);
   const [usersCount] = await db.select({ count: sql<number>`count(*)` }).from(users);
 
-  // Métrica de citaciones activas
   let pendingNoticesCount = 0;
   try {
-    const [noticesRes] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(studentNotices);
+    const [noticesRes] = await db.select({ count: sql<number>`count(*)` }).from(studentNotices);
     pendingNoticesCount = noticesRes?.count || 0;
   } catch {}
 
-  // Métricas exclusivas para el MASTER
   let auditTotal = 0;
   let criticalTotal = 0;
   let recentAuditLogs: any[] = [];
@@ -74,12 +68,9 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* ========================================================= */}
       {/* 1. CABECERA DIFERENCIADA POR ROL */}
-      {/* ========================================================= */}
       {isMaster ? (
         <div className="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 border-2 border-amber-500/70 shadow-2xl rounded-2xl p-6 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -132,7 +123,6 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
       ) : isPreceptor ? (
-        /* CABECERA EXCLUSIVA PARA PRECEPTORÍA */
         <div className="bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-950 border-2 border-emerald-500/60 shadow-lg rounded-2xl p-6 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -141,27 +131,26 @@ export default async function AdminDashboardPage() {
                   🧑‍🏫 ROL: PRECEPTORÍA Y VIDA ESCOLAR
                 </span>
                 <span className="text-xs bg-emerald-900/60 text-emerald-200 border border-emerald-700 px-2 py-0.5 rounded-full">
-                  Turno Mañana (Informática) • Turno Tarde (Robótica)
+                  💻 Informática • 🤖 Robótica
                 </span>
               </div>
               <h1 className="text-2xl font-black text-white tracking-tight">
-                Consola de Preceptoría y Citaciones
+                Consola de Preceptoría y Citaciones a Familias
               </h1>
               <p className="text-emerald-200/80 text-xs sm:text-sm mt-1">
-                Sesión activa: <strong className="text-white font-bold">{session.fullName}</strong>. Emisión de citaciones, control de inasistencias y avisos de curso.
+                Sesión activa: <strong className="text-white font-bold">{session.fullName}</strong>. Emisión de citaciones por WhatsApp/Email y avisos de curso.
               </p>
             </div>
 
             <Link
               href="/preceptoria"
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-md transition inline-flex items-center gap-1.5 shrink-0"
+              className="bg-amber-400 hover:bg-amber-300 text-emerald-950 font-black text-xs px-4 py-2.5 rounded-xl shadow-md transition inline-flex items-center gap-1.5 shrink-0"
             >
-              <span>✉️</span> Ir a Preceptoría y Citaciones ➔
+              <span>✉️</span> Abrir Cuaderno de Citaciones ➔
             </Link>
           </div>
         </div>
       ) : (
-        /* CABECERA PARA EQUIPO DIRECTIVO */
         <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border border-emerald-800 shadow-lg rounded-2xl p-6 text-white">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 text-xs font-bold px-3 py-0.5 rounded-full uppercase">
@@ -177,9 +166,7 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
-      {/* ========================================================= */}
       {/* 2. INSPECCIÓN FORENSE (SOLO MASTER) */}
-      {/* ========================================================= */}
       {isMaster && (
         <div className="bg-slate-900 border border-purple-900/60 rounded-2xl p-6 shadow-xl text-white space-y-6">
           <MaintenanceToggleClient initialIsMaintenance={isMaintenance} />
@@ -201,24 +188,21 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
-      {/* ========================================================= */}
       {/* 3. MÓDULOS DE GESTIÓN (SEGREGADOS POR ROL) */}
-      {/* ========================================================= */}
       <GestionModulesAccordion isMaster={isMaster}>
-        {/* VISTA ESPECÍFICA PARA PRECEPTORÍA */}
         {isPreceptor ? (
           <div className="space-y-6">
             <div className="bg-white rounded-3xl border-2 border-emerald-600/40 p-6 sm:p-8 shadow-md">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 mb-6">
                 <div>
                   <span className="text-xs font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">
-                    Herramienta Principal de Preceptoría
+                    Módulo Exclusivo de Preceptoría
                   </span>
                   <h3 className="text-xl font-black text-slate-900 mt-2">
                     Cuaderno Digital de Citaciones y Comunicados Individuales
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                    Emite citaciones con fecha, hora y lugar, genera el enlace de WhatsApp en 1 clic y audita la firma de conformidad digital de las familias.
+                    Emite citaciones personalizadas por alumno, envía por WhatsApp o Email en 1 clic y verifica la firma digital de conformidad con DNI.
                   </p>
                 </div>
 
@@ -227,38 +211,50 @@ export default async function AdminDashboardPage() {
                   className="px-5 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm rounded-xl shadow-md transition inline-flex items-center gap-2 self-start sm:self-auto"
                 >
                   <span>✉️</span>
-                  <span>Abrir Gestor de Citaciones ➔</span>
+                  <span>Ir a Citaciones y Horas Libres ➔</span>
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Link
                   href="/preceptoria"
-                  className="p-5 rounded-2xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition block group"
+                  className="p-5 rounded-2xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-400 transition block group"
                 >
-                  <span className="text-2xl block mb-1.5">🚨</span>
+                  <span className="text-2xl block mb-1.5">📲</span>
                   <h4 className="font-bold text-slate-900 text-sm group-hover:text-emerald-900">
-                    Avisos Generales y Horas Libres
+                    Citaciones por WhatsApp y Email
                   </h4>
                   <p className="text-xs text-slate-500 mt-1">
-                    Publicar retiros anticipados o ingresos diferenciados por curso para ambos turnos.
+                    Enviar cédulas individuales a padres y tutores con acuse de recibo.
                   </p>
                 </Link>
 
-                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                <Link
+                  href="/preceptoria"
+                  className="p-5 rounded-2xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-400 transition block group"
+                >
+                  <span className="text-2xl block mb-1.5">🚨</span>
+                  <h4 className="font-bold text-slate-900 text-sm group-hover:text-emerald-900">
+                    Avisos de Horas Libres
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Publicar ingresos tardíos o retiros anticipados por curso y división.
+                  </p>
+                </Link>
+
+                <div className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-200">
                   <span className="text-2xl block mb-1.5">📊</span>
                   <h4 className="font-bold text-slate-900 text-sm">
-                    Total Cédulas Emitidas
+                    Cédulas Emitidas
                   </h4>
                   <p className="text-2xl font-black text-emerald-900 mt-1">
-                    {pendingNoticesCount} <span className="text-xs font-normal text-slate-500">notificaciones registradas</span>
+                    {pendingNoticesCount} <span className="text-xs font-normal text-slate-500">registradas</span>
                   </p>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          /* VISTA COMPLETA PARA DIRECTIVOS, SECRETARÍA Y MASTER */
           <>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
@@ -280,7 +276,6 @@ export default async function AdminDashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Tarjeta de Preceptoría y Citaciones para Directivos */}
               <div className="bg-white rounded-2xl border-2 border-emerald-600/40 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -291,26 +286,19 @@ export default async function AdminDashboardPage() {
                   </div>
                   <h3 className="font-bold text-gray-900 text-base">Preceptoría y Citaciones</h3>
                   <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
-                    Emisión de cédulas individuales, envío por WhatsApp institucional y control de horas libres.
+                    Emisión de cédulas individuales por WhatsApp y Email, y avisos de horas libres.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
-                  <Link
-                    href="/preceptoria"
-                    className="text-xs font-bold px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg shadow-sm transition"
-                  >
-                    ✉️ Ver Citaciones
+                  <Link href="/preceptoria" className="text-xs font-bold px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg shadow-sm transition">
+                    ✉️ Citaciones y Avisos
                   </Link>
-                  <Link
-                    href="/preceptoria"
-                    className="text-xs font-bold text-emerald-700 hover:text-emerald-900 ml-auto"
-                  >
-                    Portal ➔
+                  <Link href="/preceptoria" className="text-xs font-bold text-emerald-700 hover:text-emerald-900 ml-auto">
+                    Abrir ➔
                   </Link>
                 </div>
               </div>
 
-              {/* Tarjeta de Secretaría */}
               <div className="bg-white rounded-2xl border-2 border-emerald-500/50 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -321,7 +309,7 @@ export default async function AdminDashboardPage() {
                   </div>
                   <h3 className="font-bold text-gray-900 text-base">Secretaría y Planta Docente</h3>
                   <p className="text-xs text-gray-500 mt-1 mb-4 leading-relaxed">
-                    Novedades de personal, altas individuales, carga masiva y enlace oficial a CiDi para trámites de MAB.
+                    Altas individuales, carga masiva y enlace oficial a CiDi para trámites de MAB.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">
@@ -337,7 +325,6 @@ export default async function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* Noticias */}
               <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <div className="text-2xl mb-2">📢</div>
@@ -356,7 +343,6 @@ export default async function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* Mesas */}
               <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <div className="text-2xl mb-2">📅</div>
@@ -370,7 +356,6 @@ export default async function AdminDashboardPage() {
                 </Link>
               </div>
 
-              {/* Descargas */}
               <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <div className="text-2xl mb-2">📁</div>
@@ -384,7 +369,6 @@ export default async function AdminDashboardPage() {
                 </Link>
               </div>
 
-              {/* Circulares */}
               <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                 <div>
                   <div className="text-2xl mb-2">📋</div>

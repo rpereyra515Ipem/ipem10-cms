@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import SchoolLogo from '@/components/SchoolLogo';
 import { logoutAction } from '@/actions/auth';
+import SessionTimeout from '@/components/SessionTimeout';
 
 export default function AdminLayout({
   children,
@@ -9,12 +10,13 @@ export default function AdminLayout({
 }) {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
+      <SessionTimeout timeoutMinutes={15} />
       {/* Barra de Navegación del Panel de Control */}
       <header className="bg-emerald-950 text-white border-b border-emerald-900 sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group" title="Volver a la portada principal del IPEM 10">
-              <SchoolLogo size="sm" className="w-8 h-8" />
+              <SchoolLogo size="sm" className="w-8 h-8 group-hover:scale-105 transition transform" />
               <div>
                 <span className="font-extrabold text-sm block leading-tight text-white group-hover:text-amber-300 transition">
                   Panel IPEM N° 10
@@ -81,7 +83,6 @@ export default function AdminLayout({
               <span>🌐</span> Ver Sitio Web
             </Link>
 
-            {/* Botón oficial de Cerrar Sesión */}
             <form action={logoutAction}>
               <button
                 type="submit"
@@ -95,7 +96,6 @@ export default function AdminLayout({
         </div>
       </header>
 
-      {/* Contenido de cada módulo */}
       <main className="flex-1">
         {children}
       </main>
