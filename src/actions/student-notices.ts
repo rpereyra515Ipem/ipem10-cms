@@ -90,7 +90,7 @@ export async function createStudentNoticeAction(formData: FormData) {
             <p style="font-size: 14px; line-height: 1.5;">Le informamos que desde la Preceptoría del establecimiento se ha emitido una <strong>Cédula de Notificación Oficial</strong> con el siguiente asunto:</p>
             <div style="background-color: #f8fafc; border-left: 4px solid #059669; padding: 14px; margin: 16px 0; border-radius: 6px;">
               <p style="margin: 0; font-weight: bold; font-size: 15px; color: #0f172a;">${title}</p>
-              ${meetingDate ? `<p style="margin: 8px 0 0 0; font-size: 13px; color: #be123c;"><strong>📅 Citación:</strong> ${meetingDate} a las ${meetingTime \vert{}\vert{} '—'} hs en${meetingPlace || 'Preceptoría'}</p>` : ''}
+              ${meetingDate ? `<p style="margin: 8px 0 0 0; font-size: 13px; color: #be123c;"><strong>📅 Citación:</strong> ${meetingDate} a las ${meetingTime || '—'} hs en${meetingPlace || 'Preceptoría'}</p>` : ''}
             </div>
             <p style="font-size: 13px; color: #475569; line-height: 1.5;">Por razones de privacidad y protección de datos del estudiante (Ley N° 25.326), para leer el comunicado completo y <strong>firmar digitalmente el acuse de recibo</strong> debe ingresar con el <strong>DNI del alumno</strong> en el siguiente botón oficial:</p>
             <div style="text-align: center; margin: 28px 0;">
